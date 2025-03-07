@@ -616,9 +616,10 @@ class ToolManager:
 
             if "api" in filters:
                 db_api_providers: list[ApiToolProvider] = (
-                    db.session.query(ApiToolProvider).filter(ApiToolProvider.tenant_id == tenant_id).all()
+                    db.session.query(ApiToolProvider)
+                    .filter((ApiToolProvider.user_id == user_id) | (ApiToolProvider.publish == True))  # takin command:修改了api tool可见范围
+                    .all()
                 )
-
                 api_provider_controllers: list[dict[str, Any]] = [
                     {"provider": provider, "controller": ToolTransformService.api_provider_to_controller(provider)}
                     for provider in db_api_providers
@@ -638,9 +639,11 @@ class ToolManager:
 
             if "workflow" in filters:
                 # get workflow providers
+                # takin command: workflow tool 仅自己可见； https://github.com/datamonet/takin-chat/issues/450
                 workflow_providers: list[WorkflowToolProvider] = (
-                    db.session.query(WorkflowToolProvider).filter(WorkflowToolProvider.tenant_id == tenant_id).all()
+                    db.session.query(WorkflowToolProvider).filter(WorkflowToolProvider.user_id == user_id).all()
                 )
+            
 
                 workflow_provider_controllers: list[WorkflowToolProviderController] = []
                 for provider in workflow_providers:

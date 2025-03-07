@@ -466,7 +466,13 @@ export const request = async<T>(url: string, options = {}, otherOptions?: IOther
     const errResp: Response = err as any
     if (errResp.status === 401) {
       const [parseErr, errRespData] = await asyncRunSafe<ResponseError>(errResp.json())
-      const loginUrl = `${globalThis.location.origin}/signin`
+        // takin command:
+        const loginUrl = `${
+          process.env.NEXT_PUBLIC_TAKIN_API_URL
+        }/signin?callbackUrl=${encodeURIComponent(
+          process.env.NEXT_PUBLIC_CALLBACK_URL!,
+        )}`
+      // const loginUrl = `${globalThis.location.origin}/signin`
       if (parseErr) {
         globalThis.location.href = loginUrl
         return Promise.reject(err)
@@ -497,14 +503,15 @@ export const request = async<T>(url: string, options = {}, otherOptions?: IOther
         Toast.notify({ type: 'error', message, duration: 4000 })
         return Promise.reject(err)
       }
-      if (code === 'not_init_validated' && IS_CE_EDITION) {
-        globalThis.location.href = `${globalThis.location.origin}/init`
-        return Promise.reject(err)
-      }
-      if (code === 'not_setup' && IS_CE_EDITION) {
-        globalThis.location.href = `${globalThis.location.origin}/install`
-        return Promise.reject(err)
-      }
+      // takin command:跳过
+      // if (code === 'not_init_validated' && IS_CE_EDITION) {
+      //   globalThis.location.href = `${globalThis.location.origin}/init`
+      //   return Promise.reject(err)
+      // }
+      // if (code === 'not_setup' && IS_CE_EDITION) {
+      //   globalThis.location.href = `${globalThis.location.origin}/install`
+      //   return Promise.reject(err)
+      // }
 
       // refresh token
       const [refreshErr] = await asyncRunSafe(refreshAccessTokenOrRelogin(TIME_OUT))

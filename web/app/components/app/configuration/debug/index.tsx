@@ -291,6 +291,7 @@ const Debug: FC<IDebug> = ({
         setCompletionRes(res.join(''))
       },
       onCompleted() {
+        console.log('completed', appId, data)
         setRespondingFalse()
       },
       onError() {

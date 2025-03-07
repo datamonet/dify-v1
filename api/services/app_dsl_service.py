@@ -429,6 +429,7 @@ class AppDslService:
             # Create new app
             app = App()
             app.id = str(uuid4())
+            app.user_id = account.id  # takin command:因为takin的app做了用户数据的隔离，此处需要增加一个用户id
             app.tenant_id = account.current_tenant_id
             app.mode = app_mode.value
             app.name = name or app_data.get("name", "")

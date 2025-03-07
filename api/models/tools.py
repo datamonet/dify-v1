@@ -64,7 +64,7 @@ class ApiToolProvider(Base):
 
     id = db.Column(StringUUID, server_default=db.text("uuid_generate_v4()"))
     # name of the api provider
-    name = db.Column(db.String(255), nullable=False)
+    name = db.Column(db.String(40), nullable=False)
     # icon
     icon = db.Column(db.String(255), nullable=False)
     # original schema
@@ -84,7 +84,9 @@ class ApiToolProvider(Base):
     privacy_policy = db.Column(db.String(255), nullable=True)
     # custom_disclaimer
     custom_disclaimer: Mapped[str] = mapped_column(sa.TEXT, default="")
-
+    # takin command: show whether the tool is published or not
+    publish = db.Column(db.Boolean, default=False)
+    
     created_at: Mapped[datetime] = mapped_column(db.DateTime, nullable=False, server_default=func.current_timestamp())
     updated_at: Mapped[datetime] = mapped_column(db.DateTime, nullable=False, server_default=func.current_timestamp())
 
@@ -143,7 +145,7 @@ class WorkflowToolProvider(Base):
 
     id: Mapped[str] = mapped_column(StringUUID, server_default=db.text("uuid_generate_v4()"))
     # name of the workflow provider
-    name: Mapped[str] = mapped_column(db.String(255), nullable=False)
+    name: Mapped[str] = mapped_column(db.String(40), nullable=False)
     # label of the workflow provider
     label: Mapped[str] = mapped_column(db.String(255), nullable=False, server_default="")
     # icon
@@ -205,7 +207,7 @@ class ToolModelInvoke(Base):
     # tenant id
     tenant_id = db.Column(StringUUID, nullable=False)
     # provider
-    provider = db.Column(db.String(255), nullable=False)
+    provider = db.Column(db.String(40), nullable=False)
     # type
     tool_type = db.Column(db.String(40), nullable=False)
     # tool name

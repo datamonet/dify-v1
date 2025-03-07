@@ -13,7 +13,7 @@ import ExploreNav from './explore-nav'
 import ToolsNav from './tools-nav'
 import { WorkspaceProvider } from '@/context/workspace-context'
 import { useAppContext } from '@/context/app-context'
-import LogoSite from '@/app/components/base/logo/logo-site'
+import LogoSite from '@/app/components/base/logo/logo-takin'
 import WorkplaceSelector from '@/app/components/header/account-dropdown/workplace-selector'
 import useBreakpoints, { MediaType } from '@/hooks/use-breakpoints'
 import { useProviderContext } from '@/context/provider-context'
@@ -21,6 +21,7 @@ import { useModalContext } from '@/context/modal-context'
 import PlanBadge from './plan-badge'
 import LicenseNav from './license-env'
 import { Plan } from '../billing/type'
+import Credits from '@/app/components/header/credits'
 
 const navClassName = `
   flex items-center relative mr-0 sm:mr-3 px-3 h-8 rounded-xl
@@ -60,22 +61,23 @@ const Header = () => {
         {
           !isMobile
           && <div className='flex w-64 p-2 pl-3 gap-1.5 items-center shrink-0 self-stretch'>
-            <Link href="/apps" className='flex w-8 h-8 items-center justify-center gap-2 shrink-0'>
+            <Link href={process.env.NEXT_PUBLIC_TAKIN_API_URL!} className='flex items-center mr-4'>
               <LogoSite className='object-contain' />
             </Link>
-            <div className='font-light text-divider-deep'>/</div>
+            {/* takin command: hidden workspace */}
+            {/* <div className='font-light text-divider-deep'>/</div>
             <div className='flex items-center gap-0.5'>
               <WorkspaceProvider>
                 <WorkplaceSelector />
               </WorkspaceProvider>
               {enableBilling ? <PlanBadge allowHover sandboxAsUpgrade plan={plan.type} onClick={handlePlanClick} /> : <LicenseNav />}
-            </div>
+            </div> */}
           </div>
         }
       </div >
       {isMobile && (
         <div className='flex'>
-          <Link href="/apps" className='flex items-center mr-4'>
+          <Link href={process.env.NEXT_PUBLIC_TAKIN_API_URL!} className='flex items-center mr-4'>
             <LogoSite />
           </Link>
           <div className='font-light text-divider-deep'>/</div>
@@ -97,6 +99,8 @@ const Header = () => {
         <div className='mr-3'>
           <PluginsNav />
         </div>
+        {/* takin commadnd: 积分 */}
+        <Credits />
         <AccountDropdown isMobile={isMobile} />
       </div>
       {

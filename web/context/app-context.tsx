@@ -12,6 +12,7 @@ import type { ICurrentWorkspace, LangGeniusVersionResponse, UserProfileResponse 
 import MaintenanceNotice from '@/app/components/header/maintenance-notice'
 import type { SystemFeatures } from '@/types/feature'
 import { defaultSystemFeatures } from '@/types/feature'
+import { getUserInfo } from '@/app/api/user'
 
 export type AppContextValue = {
   apps: App[]
@@ -19,6 +20,7 @@ export type AppContextValue = {
   mutateApps: VoidFunction
   userProfile: UserProfileResponse
   mutateUserProfile: VoidFunction
+  updateCreditsWithoutRerender: (newCredits: number) => void
   currentWorkspace: ICurrentWorkspace
   isCurrentWorkspaceManager: boolean
   isCurrentWorkspaceOwner: boolean
@@ -64,6 +66,7 @@ const AppContext = createContext<AppContextValue>({
     avatar_url: '',
     is_password_set: false,
   },
+  updateCreditsWithoutRerender: () => { },
   currentWorkspace: initialWorkspaceInfo,
   isCurrentWorkspaceManager: false,
   isCurrentWorkspaceOwner: false,
@@ -87,7 +90,7 @@ export type AppContextProviderProps = {
 
 export const AppContextProvider: FC<AppContextProviderProps> = ({ children }) => {
   const pageContainerRef = useRef<HTMLDivElement>(null)
-
+  const creditsRef = useRef<number>(0)
   const { data: appList, mutate: mutateApps } = useSWR({ url: '/apps', params: { page: 1, limit: 30, name: '' } }, fetchAppList)
   const { data: userProfileResponse, mutate: mutateUserProfile } = useSWR({ url: '/account/profile', params: {} }, fetchUserProfile)
   const { data: currentWorkspaceResponse, mutate: mutateCurrentWorkspace, isLoading: isLoadingCurrentWorkspace } = useSWR({ url: '/workspaces/current', params: {} }, fetchCurrentWorkspace)
@@ -106,7 +109,17 @@ export const AppContextProvider: FC<AppContextProviderProps> = ({ children }) =>
   const updateUserProfileAndVersion = useCallback(async () => {
     if (userProfileResponse && !userProfileResponse.bodyUsed) {
       const result = await userProfileResponse.json()
-      setUserProfile(result)
+      // get user info from takin
+      // takin command:后续的扣费、跳转个人详情需要用到takin的用户信息
+      const takinUserInfo = await getUserInfo()
+      setUserProfile({
+        ...result,
+        role: takinUserInfo?.role,
+        name: takinUserInfo?.name || result.name,
+        avatar_url: takinUserInfo?.image || result.avatar,
+        credits: takinUserInfo?.credits || 0,
+        takin_id: takinUserInfo?.id || '',
+      })
       const current_version = userProfileResponse.headers.get('x-version')
       const current_env = process.env.NODE_ENV === 'development' ? 'DEVELOPMENT' : userProfileResponse.headers.get('x-env')
       const versionData = await fetchLanggeniusVersion({ url: '/version', params: { current_version } })
@@ -123,6 +136,15 @@ export const AppContextProvider: FC<AppContextProviderProps> = ({ children }) =>
       setCurrentWorkspace(currentWorkspaceResponse)
   }, [currentWorkspaceResponse])
 
+  const updateCreditsWithoutRerender = useCallback((newCredits: number) => {
+    creditsRef.current = newCredits
+    const creditsElements = document.querySelectorAll('[data-credits-display]')
+    creditsElements.forEach((element) => {
+      if (element instanceof HTMLElement)
+        element.textContent = newCredits.toString()
+    })
+  }, [])
+
   if (!appList || !userProfile)
     return <Loading type='app' />
 
@@ -133,6 +155,7 @@ export const AppContextProvider: FC<AppContextProviderProps> = ({ children }) =>
       mutateApps,
       userProfile,
       mutateUserProfile,
+      updateCreditsWithoutRerender,
       pageContainerRef,
       langeniusVersionInfo,
       useSelector,

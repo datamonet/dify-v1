@@ -28,7 +28,8 @@ const ProviderList = () => {
     defaultTab: 'builtin',
   })
   const options = [
-    { value: 'builtin', text: t('tools.type.builtIn') },
+    //  {/* takin command:hidden  builtin page */}
+    // { value: 'builtin', text: t('tools.type.builtIn') },
     { value: 'api', text: t('tools.type.custom') },
     { value: 'workflow', text: t('tools.type.workflow') },
   ]

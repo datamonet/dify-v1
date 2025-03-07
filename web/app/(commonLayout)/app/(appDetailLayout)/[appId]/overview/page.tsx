@@ -15,7 +15,8 @@ const Overview = async ({
     <div className="h-full px-4 sm:px-12 py-6 overflow-scroll bg-chatbot-bg">
       <ApikeyInfoPanel />
       <TracingPanel />
-      <CardView appId={appId} />
+     {/*takin command:隐藏CardView*/}
+      {/*<CardView appId={appId} />*/}
       <ChartView appId={appId} />
     </div>
   )

@@ -53,23 +53,25 @@ export default function AccountSetting({
   onCancel,
   activeTab = 'members',
 }: IAccountSettingProps) {
-  const [activeMenu, setActiveMenu] = useState(activeTab)
+  // takin command:初始值设定成语言
+  const [activeMenu, setActiveMenu] = useState('language')
   const { t } = useTranslation()
   const { enableBilling, enableReplaceWebAppLogo } = useProviderContext()
-  const { isCurrentWorkspaceDatasetOperator } = useAppContext()
+  // takin command:只有 workspace owner 才能設定
+  const { isCurrentWorkspaceDatasetOperator, isCurrentWorkspaceOwner } = useAppContext()
 
   const workplaceGroupItems = (() => {
     if (isCurrentWorkspaceDatasetOperator)
       return []
     return [
       {
-        key: 'provider',
+        key: isCurrentWorkspaceOwner ? 'provider' : false,
         name: t('common.settings.provider'),
         icon: <RiBrain2Line className={iconClassName} />,
         activeIcon: <RiBrain2Fill className={iconClassName} />,
       },
       {
-        key: 'members',
+        key: isCurrentWorkspaceOwner ? 'members' : false,
         name: t('common.settings.members'),
         icon: <RiGroup2Line className={iconClassName} />,
         activeIcon: <RiGroup2Fill className={iconClassName} />,
@@ -83,19 +85,19 @@ export default function AccountSetting({
         activeIcon: <RiMoneyDollarCircleFill className={iconClassName} />,
       },
       {
-        key: 'data-source',
+        key: isCurrentWorkspaceOwner ? 'data-source' : false,
         name: t('common.settings.dataSource'),
         icon: <RiDatabase2Line className={iconClassName} />,
         activeIcon: <RiDatabase2Fill className={iconClassName} />,
       },
       {
-        key: 'api-based-extension',
+        key: isCurrentWorkspaceOwner ? 'api-based-extension' : false,
         name: t('common.settings.apiBasedExtension'),
         icon: <RiPuzzle2Line className={iconClassName} />,
         activeIcon: <RiPuzzle2Fill className={iconClassName} />,
       },
       {
-        key: (enableReplaceWebAppLogo || enableBilling) ? 'custom' : false,
+        key: (isCurrentWorkspaceOwner ||enableReplaceWebAppLogo || enableBilling) ? 'custom' : false,
         name: t('custom.custom'),
         icon: <RiColorFilterLine className={iconClassName} />,
         activeIcon: <RiColorFilterFill className={iconClassName} />,
@@ -139,7 +141,7 @@ export default function AccountSetting({
     }
   }, [])
 
-  const activeItem = [...menuItems[0].items, ...menuItems[1].items].find(item => item.key === activeMenu)
+  const activeItem = [...(isCurrentWorkspaceOwner ? menuItems[0].items : []), ...menuItems[1].items].find(item => item.key === activeMenu)
 
   const [searchValue, setSearchValue] = useState<string>('')
 
@@ -155,7 +157,7 @@ export default function AccountSetting({
             {
               menuItems.map(menuItem => (
                 <div key={menuItem.key} className='mb-2'>
-                  {!isCurrentWorkspaceDatasetOperator && (
+                  {isCurrentWorkspaceOwner&&!isCurrentWorkspaceDatasetOperator && (
                     <div className='py-2 pl-3 pb-1 mb-0.5 system-xs-medium-uppercase text-text-tertiary'>{menuItem.name}</div>
                   )}
                   <div>

@@ -450,10 +450,11 @@ class ApiToolManageService:
         """
         list api tools
         """
-        # get all api providers
+        # get all api providers; takin command:这里需要过滤，只返回自己的
         db_providers: list[ApiToolProvider] = (
-            db.session.query(ApiToolProvider).filter(ApiToolProvider.tenant_id == tenant_id).all() or []
+            db.session.query(ApiToolProvider).filter(ApiToolProvider.user_id == user_id, ApiToolProvider.tenant_id == tenant_id).all() or []
         )
+
 
         result: list[ToolProviderApiEntity] = []
 

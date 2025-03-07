@@ -160,7 +160,8 @@ const StepOne = ({
                       {t('datasetCreation.stepOne.dataSourceType.file')}
                     </span>
                   </div>
-                  <div
+                  {/* takin command:hidden notion and web */}
+                  {/* <div
                     className={cn(
                       s.dataSourceItem,
                       dataSourceType === DataSourceType.NOTION && s.active,
@@ -197,7 +198,7 @@ const StepOne = ({
                     >
                       {t('datasetCreation.stepOne.dataSourceType.web')}
                     </span>
-                  </div>
+                  </div> */}
                 </div>
               )
             }

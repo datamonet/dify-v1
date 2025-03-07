@@ -32,6 +32,8 @@ export default function AppSelector({ isMobile }: IAppSelector) {
   `
   const router = useRouter()
   const [aboutVisible, setAboutVisible] = useState(false)
+  // takin command：在外部增加切换语言的弹窗
+  const [showModal, setShowModal] = useState(false)
   const systemFeatures = useContextSelector(AppContext, v => v.systemFeatures)
 
   const { locale } = useContext(I18n)
@@ -39,6 +41,7 @@ export default function AppSelector({ isMobile }: IAppSelector) {
   const { userProfile, langeniusVersionInfo, isCurrentWorkspaceOwner } = useAppContext()
   const { setShowAccountSettingModal } = useModalContext()
 
+  // takin command: 退出登录
   const handleLogout = async () => {
     await logout({
       url: '/logout',
@@ -49,7 +52,7 @@ export default function AppSelector({ isMobile }: IAppSelector) {
     localStorage.removeItem('console_token')
     localStorage.removeItem('refresh_token')
 
-    router.push('/signin')
+    router.push(`${process.env.NEXT_PUBLIC_TAKIN_API_URL}/signin?callbackUrl=${encodeURIComponent(process.env.NEXT_PUBLIC_CALLBACK_URL)}`)
   }
 
   return (
@@ -99,12 +102,13 @@ export default function AppSelector({ isMobile }: IAppSelector) {
                     </div>
                   </Menu.Item>
                   <div className="px-1 py-1">
+                     {/* takin command：隐藏工作空间 */}
                     <Menu.Item>
                       {({ active }) => <Link
                         className={classNames(itemClassName, 'group',
                           active && 'bg-state-base-hover',
                         )}
-                        href='/account'
+                        href={`${process.env.NEXT_PUBLIC_TAKIN_API_URL}/user`}
                         target='_self' rel='noopener noreferrer'>
                         <RiAccountCircleLine className='size-4 flex-shrink-0 text-text-tertiary' />
                         <div className='flex-grow system-md-regular text-text-secondary px-1'>{t('common.account.account')}</div>
@@ -120,7 +124,7 @@ export default function AppSelector({ isMobile }: IAppSelector) {
                       </div>}
                     </Menu.Item>
                   </div>
-                  <div className='p-1'>
+                  {/* <div className='p-1'>
                     <Menu.Item>
                       {({ active }) => <Link
                         className={classNames(itemClassName, 'group justify-between',
@@ -137,8 +141,8 @@ export default function AppSelector({ isMobile }: IAppSelector) {
                     </Menu.Item>
                     <Support />
                     {IS_CLOUD_EDITION && isCurrentWorkspaceOwner && <Compliance />}
-                  </div>
-                  <div className='p-1'>
+                  </div> */}
+                  {/* <div className='p-1'>
                     <Menu.Item>
                       {({ active }) => <Link
                         className={classNames(itemClassName, 'group justify-between',
@@ -182,7 +186,8 @@ export default function AppSelector({ isMobile }: IAppSelector) {
                         </Menu.Item>
                       )
                     }
-                  </div>
+                  </div> */}
+                
                   <Menu.Item>
                     {({ active }) => <div className='p-1' onClick={() => handleLogout()}>
                       <div

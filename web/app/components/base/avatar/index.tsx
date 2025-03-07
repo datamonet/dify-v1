@@ -16,7 +16,8 @@ const Avatar = ({
   className,
   textClassName,
 }: AvatarProps) => {
-  const avatarClassName = 'shrink-0 flex items-center rounded-full bg-primary-600'
+  //takin command:有头像背景就不要变蓝色
+  const avatarClassName = 'shrink-0 flex items-center rounded-full border'
   const style = { width: `${size}px`, height: `${size}px`, fontSize: `${size}px`, lineHeight: `${size}px` }
   const [imgError, setImgError] = useState(false)
 
@@ -38,7 +39,7 @@ const Avatar = ({
 
   return (
     <div
-      className={cn(avatarClassName, className)}
+      className={cn(avatarClassName, className, 'bg-primary-600')}
       style={style}
     >
       <div

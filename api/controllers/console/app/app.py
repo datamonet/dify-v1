@@ -68,7 +68,6 @@ class AppListApi(Resource):
             return {"data": [], "total": 0, "page": 1, "limit": 20, "has_more": False}
 
         return marshal(app_pagination, app_pagination_fields)
-
     @setup_required
     @login_required
     @account_initialization_required

@@ -42,7 +42,7 @@ const AppDetailLayout: FC<IAppDetailLayoutProps> = (props) => {
   const pathname = usePathname()
   const media = useBreakpoints()
   const isMobile = media === MediaType.mobile
-  const { isCurrentWorkspaceEditor, isLoadingCurrentWorkspace } = useAppContext()
+  const { isCurrentWorkspaceOwner, isCurrentWorkspaceEditor, isLoadingCurrentWorkspace } = useAppContext()
   const { appDetail, setAppDetail, setAppSiderbarExpand } = useStore(useShallow(state => ({
     appDetail: state.appDetail,
     setAppDetail: state.setAppDetail,
@@ -69,12 +69,16 @@ const AppDetailLayout: FC<IAppDetailLayoutProps> = (props) => {
         }]
         : []
       ),
-      {
-        name: t('common.appMenus.apiAccess'),
-        href: `/app/${appId}/develop`,
-        icon: RiTerminalBoxLine,
-        selectedIcon: RiTerminalBoxFill,
-      },
+      // takin command:hidden apiAccess
+      ...(isCurrentWorkspaceOwner
+        ? [{
+          name: t('common.appMenus.apiAccess'),
+          href: `/app/${appId}/develop`,
+          icon: RiTerminalBoxLine,
+          selectedIcon: RiTerminalBoxFill,
+        }]
+        : []
+      ),
       ...(isCurrentWorkspaceEditor
         ? [{
           name: mode !== 'workflow'
@@ -86,12 +90,16 @@ const AppDetailLayout: FC<IAppDetailLayoutProps> = (props) => {
         }]
         : []
       ),
-      {
-        name: t('common.appMenus.overview'),
-        href: `/app/${appId}/overview`,
-        icon: RiDashboard2Line,
-        selectedIcon: RiDashboard2Fill,
-      },
+            // takin command:hidden apiAccess
+      ...(isCurrentWorkspaceOwner
+        ? [{
+          name: t('common.appMenus.overview'),
+          href: `/app/${appId}/overview`,
+          icon: RiDashboard2Line,
+          selectedIcon: RiDashboard2Fill,
+        }]
+        : []
+      ),
     ]
     return navs
   }, [])
@@ -120,7 +128,6 @@ const AppDetailLayout: FC<IAppDetailLayoutProps> = (props) => {
     }).finally(() => {
       setIsLoadingAppDetail(false)
     })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [appId, pathname])
 
   useEffect(() => {

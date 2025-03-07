@@ -34,7 +34,8 @@ class AppService:
         :param args: request args
         :return:
         """
-        filters = [App.tenant_id == tenant_id, App.is_universal == False]
+        # takin command: 用户隔离，直接加上created_by
+        filters = [App.tenant_id == tenant_id, App.is_universal == False,App.created_by == user_id]
 
         if args["mode"] == "workflow":
             filters.append(App.mode.in_([AppMode.WORKFLOW.value, AppMode.COMPLETION.value]))
@@ -130,6 +131,7 @@ class AppService:
         app.icon = args["icon"]
         app.icon_background = args["icon_background"]
         app.tenant_id = tenant_id
+        app.user_id = account.id  # takin command: 增加用户id
         app.api_rph = args.get("api_rph", 0)
         app.api_rpm = args.get("api_rpm", 0)
         app.created_by = account.id

@@ -16,7 +16,7 @@ from configs import dify_config
 from core.entities.knowledge_entities import IndexingEstimate, PreviewDetail, QAPreviewDetail
 from core.errors.error import ProviderTokenNotInitError
 from core.model_manager import ModelInstance, ModelManager
-from core.model_runtime.entities.model_entities import ModelType
+from core.model_runtime.entities.model_entities import ModelType, PriceType
 from core.rag.cleaner.clean_processor import CleanProcessor
 from core.rag.datasource.keyword.keyword_factory import Keyword
 from core.rag.docstore.dataset_docstore import DatasetDocumentStore
@@ -39,6 +39,12 @@ from models.dataset import ChildChunk, Dataset, DatasetProcessRule, DocumentSegm
 from models.dataset import Document as DatasetDocument
 from models.model import UploadFile
 from services.feature_service import FeatureService
+from core.model_runtime.model_providers.__base.text_embedding_model import (
+    TextEmbeddingModel,
+)
+from core.model_runtime.model_providers.__base.large_language_model import (
+    LargeLanguageModel,
+)
 
 
 class IndexingRunner:
@@ -276,6 +282,12 @@ class IndexingRunner:
                     tenant_id=tenant_id,
                     model_type=ModelType.TEXT_EMBEDDING,
                 )
+    # ------------------------------- takin command:增加token扣费返回 -----------------------------
+
+        total_price = 0
+        currency = "USD"
+        tokens = 0
+
         preview_texts = []  # type: ignore
 
         total_segments = 0
@@ -297,6 +309,7 @@ class IndexingRunner:
             )
             total_segments += len(documents)
             for document in documents:
+                tokens += embedding_model_instance.get_text_embedding_num_tokens(texts=[self.filter_string(document.page_content)])[0]
                 if len(preview_texts) < 10:
                     if doc_form and doc_form == "qa_model":
                         preview_detail = QAPreviewDetail(
@@ -324,9 +337,35 @@ class IndexingRunner:
                     db.session.delete(image_file)
 
         if doc_form and doc_form == "qa_model":
-            return IndexingEstimate(total_segments=total_segments * 20, qa_preview=preview_texts, preview=[])
-        return IndexingEstimate(total_segments=total_segments, preview=preview_texts)  # type: ignore
+            model_instance = self.model_manager.get_default_model_instance(
+                tenant_id=tenant_id, model_type=ModelType.LLM
+            )
 
+            model_type_instance = model_instance.model_type_instance
+            model_type_instance = cast(LargeLanguageModel, model_type_instance)
+            if len(preview_texts) > 0:
+                price_info = model_type_instance.get_price(
+                    model=model_instance.model,
+                    credentials=model_instance.credentials,
+                    price_type=PriceType.INPUT,
+                    tokens=total_segments * 2000,
+                )
+            return IndexingEstimate(
+                total_segments=total_segments * 20, qa_preview=preview_texts, preview=[], model_type_instance=model_type_instance, total_price=price_info.total_amount, currency=price_info.currency
+            )
+        if embedding_model_instance:
+            embedding_model_type_instance = cast(TextEmbeddingModel, embedding_model_instance.model_type_instance)
+            embedding_price_info = embedding_model_type_instance.get_price(
+                model=embedding_model_instance.model,
+                credentials=embedding_model_instance.credentials,
+                price_type=PriceType.INPUT,
+                tokens=tokens,
+            )
+            total_price = "{:f}".format(embedding_price_info.total_amount)
+            currency = embedding_price_info.currency
+        return IndexingEstimate(total_segments=total_segments, preview=preview_texts,total_price=total_price, currency=currency)  # type: ignore
+    # ------------------------------- takin command:end -----------------------------
+    
     def _extract(
         self, index_processor: BaseIndexProcessor, dataset_document: DatasetDocument, process_rule: dict
     ) -> list[Document]:

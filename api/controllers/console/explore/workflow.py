@@ -44,7 +44,12 @@ class InstalledAppWorkflowRunApi(InstalledAppResource):
 
         try:
             response = AppGenerateService.generate(
-                app_model=app_model, user=current_user, args=args, invoke_from=InvokeFrom.EXPLORE, streaming=True
+                app_model=app_model,
+                user=current_user,
+                args=args,
+                # invoke_from=InvokeFrom.EXPLORE,
+                invoke_from=InvokeFrom.DEBUGGER,  # takin command: explore需要增加tracking用于收费计算
+                streaming=True,
             )
 
             return helper.compact_generate_response(response)

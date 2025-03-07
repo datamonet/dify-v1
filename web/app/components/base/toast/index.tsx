@@ -48,8 +48,9 @@ const Toast = ({
     'fixed w-[360px] rounded-xl my-4 mx-8 flex-grow z-[9999] overflow-hidden',
     size === 'md' ? 'p-3' : 'p-2',
     'border border-components-panel-border-subtle bg-components-panel-bg-blur shadow-sm',
-    'top-0',
-    'right-0',
+    'top-12 left-1/2', // 将元素的左边缘定位到视口的50%
+    '-translate-x-1/2', // 将元素向左移动自身宽度的50%，实现水平居中 
+    // takin command: 错误弹窗放在中间
   )}>
     <div className={`absolute inset-0 opacity-40 ${
       (type === 'success' && 'bg-toast-success-bg')
@@ -92,7 +93,8 @@ export const ToastProvider = ({
     duration: 6000,
   }
   const [params, setParams] = React.useState<IToastProps>(placeholder)
-  const defaultDuring = (params.type === 'success' || params.type === 'info') ? 3000 : 6000
+  // takin command:停留时间长一点
+  const defaultDuring = 6000
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -124,7 +126,8 @@ Toast.notify = ({
   customComponent,
   onClose,
 }: Pick<IToastProps, 'type' | 'size' | 'message' | 'duration' | 'className' | 'customComponent' | 'onClose'>) => {
-  const defaultDuring = (type === 'success' || type === 'info') ? 3000 : 6000
+  // takin command:停留时间长一点
+  const defaultDuring = 6000
   if (typeof window === 'object') {
     const holder = document.createElement('div')
     const root = createRoot(holder)

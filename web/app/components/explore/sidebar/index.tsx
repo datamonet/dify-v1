@@ -13,6 +13,7 @@ import ExploreContext from '@/context/explore-context'
 import Confirm from '@/app/components/base/confirm'
 import Divider from '@/app/components/base/divider'
 import useBreakpoints, { MediaType } from '@/hooks/use-breakpoints'
+import Loading from '@/app/components/base/loading'
 
 const SelectedDiscoveryIcon = () => (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="current" xmlns="http://www.w3.org/2000/svg">
@@ -51,13 +52,21 @@ const SideBar: FC<IExploreSideBarProps> = ({
   const isDiscoverySelected = lastSegment === 'apps'
   const isChatSelected = lastSegment === 'chat'
   const { installedApps, setInstalledApps } = useContext(ExploreContext)
+  const [isLoading, setIsLoading] = useState(true)
 
   const media = useBreakpoints()
   const isMobile = media === MediaType.mobile
 
-  const fetchInstalledAppList = async () => {
-    const { installed_apps }: any = await doFetchInstalledAppList()
-    setInstalledApps(installed_apps)
+   // takin command:增加loading
+   const fetchInstalledAppList = async () => {
+    try {
+      setIsLoading(true)
+      const { installed_apps }: any = await doFetchInstalledAppList()
+      setInstalledApps(installed_apps)
+    }
+    finally {
+      setIsLoading(false)
+    }
   }
 
   const [showConfirm, setShowConfirm] = useState(false)
@@ -104,6 +113,11 @@ const SideBar: FC<IExploreSideBarProps> = ({
           {!isMobile && <div className='text-sm'>{t('explore.sidebar.discovery')}</div>}
         </Link>
       </div>
+      {isLoading && (
+        <div className="flex items-center justify-center py-24">
+          <Loading type='area' />
+        </div>
+      )}
       {installedApps.length > 0 && (
         <div className='mt-10'>
           <p className='pl-2 mobile:px-0 text-xs text-text-tertiary break-all font-medium uppercase'>{t('explore.sidebar.workspace')}</p>

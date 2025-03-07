@@ -141,12 +141,13 @@ const Apps = () => {
           options={options}
         />
         <div className='flex items-center gap-2'>
-          <CheckboxWithLabel
+          {/* takin command: hidden workspace  */}
+          {/* <CheckboxWithLabel
             className='mr-2'
             label={t('app.showMyCreatedAppsOnly')}
             isChecked={isCreatedByMe}
             onChange={handleCreatedByMeChange}
-          />
+          /> */}
           <TagFilter type='app' value={tagFilterValue} onChange={handleTagsChange} />
           <Input
             showLeftIcon

@@ -22,6 +22,9 @@ const nextConfig = {
   // Configure pageExtensions to include md and mdx
   pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
   experimental: {
+    serverActions: {
+      bodySizeLimit: '10mb', // takin command:Adjust this value as needed
+    },
   },
   // fix all before production. Now it slow the develop speed.
   eslint: {

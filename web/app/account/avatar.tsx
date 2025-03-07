@@ -17,6 +17,7 @@ export default function AppSelector() {
   const { t } = useTranslation()
   const { userProfile } = useAppContext()
 
+  // takin command: 退出登录
   const handleLogout = async () => {
     await logout({
       url: '/logout',
@@ -27,7 +28,7 @@ export default function AppSelector() {
     localStorage.removeItem('console_token')
     localStorage.removeItem('refresh_token')
 
-    router.push('/signin')
+    router.push(`${process.env.NEXT_PUBLIC_TAKIN_API_URL}/signin?callbackUrl=${encodeURIComponent(process.env.NEXT_PUBLIC_CALLBACK_URL)}`)
   }
 
   return (

@@ -32,7 +32,6 @@ import { DelimiterInput, MaxLengthInput, OverlapInput } from './inputs'
 import cn from '@/utils/classnames'
 import type { CrawlOptions, CrawlResultItem, CreateDocumentReq, CustomFile, DocumentItem, FullDocumentDetail, ParentMode, PreProcessingRule, ProcessRule, Rules, createDocumentResponse } from '@/models/datasets'
 import { ChunkingMode, DataSourceType, ProcessMode } from '@/models/datasets'
-
 import Button from '@/app/components/base/button'
 import FloatRightContainer from '@/app/components/base/float-right-container'
 import RetrievalMethodConfig from '@/app/components/datasets/common/retrieval-method-config'
@@ -62,6 +61,12 @@ import Tooltip from '@/app/components/base/tooltip'
 import CustomDialog from '@/app/components/base/dialog'
 import { PortalToFollowElem, PortalToFollowElemContent, PortalToFollowElemTrigger } from '@/app/components/base/portal-to-follow-elem'
 import { AlertTriangle } from '@/app/components/base/icons/src/vender/solid/alertsAndFeedback'
+
+
+// takin command:扣费
+import { fetchIndexingEstimateBatch } from '@/service/datasets'
+import { updateCreditsByKnowledge } from '@/app/api/pricing'
+import AppContext from '@/context/app-context'
 
 const TextLabel: FC<PropsWithChildren> = (props) => {
   return <label className='text-text-secondary system-sm-semibold'>{props.children}</label>
@@ -148,7 +153,7 @@ const StepTwo = ({
   const { locale } = useContext(I18n)
   const media = useBreakpoints()
   const isMobile = media === MediaType.mobile
-
+  const { userProfile, updateCreditsWithoutRerender } = useContext(AppContext)
   const { dataset: currentDataset, mutateDatasetRes } = useDatasetDetailContext()
 
   const isInUpload = Boolean(currentDataset)
@@ -525,12 +530,13 @@ const StepTwo = ({
     const params = getCreationParams()
     if (!params)
       return false
-
+    let res: createDocumentResponse | undefined
     if (!datasetId) {
       await createFirstDocumentMutation.mutateAsync(
         params,
         {
           onSuccess(data) {
+            res = data
             updateIndexingTypeCache && updateIndexingTypeCache(indexType as string)
             updateResultCache && updateResultCache(data)
             updateRetrievalMethodCache && updateRetrievalMethodCache(retrievalConfig.search_method as string)
@@ -541,6 +547,7 @@ const StepTwo = ({
     else {
       await createDocumentMutation.mutateAsync(params, {
         onSuccess(data) {
+          res = data
           updateIndexingTypeCache && updateIndexingTypeCache(indexType as string)
           updateResultCache && updateResultCache(data)
         },
@@ -550,6 +557,33 @@ const StepTwo = ({
       mutateDatasetRes()
     onStepChange && onStepChange(+1)
     isSetting && onSave && onSave()
+
+    console.log('文件上传更新积分，扣费',datasetId,  res)
+    let cost = 0
+    try {
+      const response = await fetchIndexingEstimateBatch({
+        datasetId: (datasetId || res?.dataset?.id) || '',
+        batchId: res?.batch as string,
+      })
+      console.log('文件上传更新积分，扣费',response.total_price)
+      if (response)
+        cost = response.total_price
+    }
+    catch (err) {
+      cost = 1
+      console.error(err)
+    }
+    // takin command:文件上传更新积分，扣费
+    await updateCreditsByKnowledge(
+      {
+        usage: cost,
+        reason: 'Dify Documents',
+        source: { dataset_id: (datasetId || res?.dataset?.id) || '' },
+      },
+    )
+    const newCredits = parseFloat(((userProfile?.credits || 0) - cost).toFixed(2))
+    updateCreditsWithoutRerender(newCredits)
+
   }
 
   useEffect(() => {

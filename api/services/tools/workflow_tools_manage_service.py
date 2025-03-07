@@ -186,7 +186,14 @@ class WorkflowToolManageService:
         :param tenant_id: the tenant id
         :return: the list of tools
         """
-        db_tools = db.session.query(WorkflowToolProvider).filter(WorkflowToolProvider.tenant_id == tenant_id).all()
+        db_tools = (
+            db.session.query(WorkflowToolProvider)
+            .filter(
+                WorkflowToolProvider.user_id == user_id  # takin command: List workflow tools需要过滤，只返回自己的工具
+                # WorkflowToolProvider.tenant_id == tenant_id
+            )
+            .all()
+        )
 
         tools: list[WorkflowToolProviderController] = []
         for provider in db_tools:

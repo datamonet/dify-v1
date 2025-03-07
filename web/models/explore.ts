@@ -8,6 +8,7 @@ export type AppBasicInfo = {
   icon_url: string
   name: string
   description: string
+  username?: string // takin command: 用于展示用户名
   use_icon_as_answer_icon: boolean
 }
 
