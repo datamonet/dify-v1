@@ -2,6 +2,7 @@ import {
   memo,
   useCallback,
   useState,
+  useMemo
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
@@ -27,7 +28,7 @@ import { FileText } from '@/app/components/base/icons/src/vender/line/files'
 import WorkflowToolConfigureButton from '@/app/components/tools/workflow-tool/configure-button'
 import type { InputVar } from '@/app/components/workflow/types'
 import { appDefaultIconBackground } from '@/config'
-
+import useSWR from 'swr'
 import { createRecommendedApp, deleteRecommendedApp, fetchAppDetail, fetchAppList } from '@/service/explore'
 
 export type AppPublisherProps = {
@@ -64,6 +65,7 @@ const AppPublisher = ({
   onRefreshData,
 }: AppPublisherProps) => {
   const { t } = useTranslation()
+  const [postStatus, setPostStatus] = useState(false)
   const [posted, setPosted] = useState(false)
   const [published, setPublished] = useState(false)
   const [open, setOpen] = useState(false)
@@ -76,7 +78,25 @@ const AppPublisher = ({
   const formatTimeFromNow = useCallback((time: number) => {
     return dayjs(time).locale(language === 'zh_Hans' ? 'zh-cn' : language.replace('_', '-')).fromNow()
   }, [language])
-
+  
+  const { mutate } = useSWR(
+    ['/explore/apps'],
+    () =>
+      fetchAppList().then(({ categories, community, recommended_apps }) => ({
+        categories,
+        community,
+        recommended_apps,
+        allList: [...community, ...recommended_apps].sort((a, b) => a.position - b.position),
+      })),
+    {
+      fallbackData: {
+        categories: [],
+        community: [],
+        recommended_apps: [],
+        allList: [],
+      },
+    },
+  )
 
   const handleRestore = useCallback(async () => {
     try {
@@ -145,6 +165,22 @@ const AppPublisher = ({
       setPublished(false)
     }
   }
+
+  useMemo(() => {
+    const handlePostStatus = async () => {
+      try {
+        const response = await fetchAppDetail(appDetail?.id || '')
+        setPosted(!!response)
+        setPostStatus(!!response)
+      }
+      catch (e) {
+        setPosted(false)
+      }
+    }
+
+    if (appDetail)
+      handlePostStatus()
+  }, [appDetail])
 
   return (
     <PortalToFollowElem
