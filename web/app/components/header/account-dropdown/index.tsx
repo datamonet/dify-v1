@@ -108,7 +108,7 @@ export default function AppSelector({ isMobile }: IAppSelector) {
                         className={classNames(itemClassName, 'group',
                           active && 'bg-state-base-hover',
                         )}
-                        href={`${process.env.NEXT_PUBLIC_TAKIN_API_URL}/user`}
+                        href={`${process.env.NEXT_PUBLIC_TAKIN_API_URL}/settings`}
                         target='_self' rel='noopener noreferrer'>
                         <RiAccountCircleLine className='size-4 flex-shrink-0 text-text-tertiary' />
                         <div className='flex-grow system-md-regular text-text-secondary px-1'>{t('common.account.account')}</div>

@@ -1,3 +1,7 @@
+# Import environment variables from middleware-takin.env file
+env_file:
+  - middleware-takin.env
+
 services:
   # The redis cache.
   redis:
