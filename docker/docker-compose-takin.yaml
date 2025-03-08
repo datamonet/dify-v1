@@ -308,6 +308,7 @@ services:
     environment:
       # Use the shared environment variables.
       <<: *shared-api-worker-env
+      DB_DEFAULT_DATABASE: ${DB_DATABASE:-dify}
       DB_DATABASE: ${DB_PLUGIN_DATABASE:-dify-plugin}
       SERVER_PORT: ${PLUGIN_DAEMON_PORT:-5002}
       SERVER_KEY: ${PLUGIN_DAEMON_KEY:-lYkiYYT6owG+71oLerGzA7GXCgOT++6ovaezWAjpCjf+Sjc3ZtU+qUEi}
