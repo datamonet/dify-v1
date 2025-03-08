@@ -8,7 +8,7 @@ import dayjs from 'dayjs'
 import { RiArrowDownSLine, RiPlanetLine } from '@remixicon/react'
 import Toast from '../../base/toast'
 import type { ModelAndParameter } from '../configuration/debug/types'
-import SuggestedAction from './suggested-action'
+import PermissionsRadio from './permissions-radio'
 import PublishWithMultipleModel from './publish-with-multiple-model'
 import Button from '@/app/components/base/button'
 import {
@@ -27,6 +27,8 @@ import { FileText } from '@/app/components/base/icons/src/vender/line/files'
 import WorkflowToolConfigureButton from '@/app/components/tools/workflow-tool/configure-button'
 import type { InputVar } from '@/app/components/workflow/types'
 import { appDefaultIconBackground } from '@/config'
+
+import { createRecommendedApp, deleteRecommendedApp, fetchAppDetail, fetchAppList } from '@/service/explore'
 
 export type AppPublisherProps = {
   disabled?: boolean
@@ -62,6 +64,7 @@ const AppPublisher = ({
   onRefreshData,
 }: AppPublisherProps) => {
   const { t } = useTranslation()
+  const [posted, setPosted] = useState(false)
   const [published, setPublished] = useState(false)
   const [open, setOpen] = useState(false)
   const appDetail = useAppStore(state => state.appDetail)
@@ -74,15 +77,6 @@ const AppPublisher = ({
     return dayjs(time).locale(language === 'zh_Hans' ? 'zh-cn' : language.replace('_', '-')).fromNow()
   }, [language])
 
-  const handlePublish = async (modelAndParameter?: ModelAndParameter) => {
-    try {
-      await onPublish?.(modelAndParameter)
-      setPublished(true)
-    }
-    catch (e) {
-      setPublished(false)
-    }
-  }
 
   const handleRestore = useCallback(async () => {
     try {
@@ -121,6 +115,36 @@ const AppPublisher = ({
   }, [appDetail?.id])
 
   const [embeddingModalOpen, setEmbeddingModalOpen] = useState(false)
+
+  const handlePosted = async () => {
+    if (postStatus === posted)
+      return
+
+    if (posted) {
+      await createRecommendedApp(
+        appDetail?.id || '',
+        appDetail?.description,
+        appMode,
+      )
+    }
+    else {
+      await deleteRecommendedApp(appDetail?.id || '')
+    }
+    mutate()
+  }
+
+  const handlePublish = async (modelAndParameter?: ModelAndParameter) => {
+    try {
+      // takin command:设置app的公开状态
+      await handlePosted()
+      await onPublish?.(modelAndParameter)
+
+      setPublished(true)
+    }
+    catch (e) {
+      setPublished(false)
+    }
+  }
 
   return (
     <PortalToFollowElem
@@ -193,7 +217,7 @@ const AppPublisher = ({
               )
             }
           </div>
-          <div className='p-4 pt-3 border-t-[0.5px] border-divider-regular'>
+          {/* <div className='p-4 pt-3 border-t-[0.5px] border-divider-regular'>
             <SuggestedAction disabled={!publishedAt} link={appURL} icon={<PlayCircle />}>{t('workflow.common.runApp')}</SuggestedAction>
             {appDetail?.mode === 'workflow'
               ? (
@@ -244,8 +268,22 @@ const AppPublisher = ({
                 onRefreshData={onRefreshData}
               />
             )}
-          </div>
-        </div>
+          </div>*/}
+             {/*takin command:add PermissionsRadio */}
+           <div className="px-4 py-2 flex flex-col">
+              <div className="flex items-center text-sm h-6 text-text-tertiary">
+                {t('datasetSettings.form.permissions')}
+              </div>
+                <PermissionsRadio
+                itemClassName="sm:w-36 text-sm mt-2"
+                      value={posted ? 'all_team_members' : 'only_me'}
+                      onChange={(v) => {
+                        setPosted(v === 'all_team_members')
+                        setPublished(false)
+                      }
+                      }/>        
+           </div> 
+        </div> 
       </PortalToFollowElemContent>
       <EmbeddedModal
         siteInfo={appDetail?.site}

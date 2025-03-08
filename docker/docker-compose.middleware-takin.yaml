@@ -1,10 +1,8 @@
-# Import environment variables from middleware-takin.env file
-env_file:
-  - middleware-takin.env
-
 services:
   # The redis cache.
   redis:
+    env_file:
+      - middleware-takin.env
     image: redis:6-alpine
     restart: always
     environment:
@@ -21,6 +19,8 @@ services:
 
   # The DifySandbox
   sandbox:
+    env_file:
+      - middleware-takin.env
     image: langgenius/dify-sandbox:0.2.10
     restart: always
     environment:
@@ -44,6 +44,8 @@ services:
 
   # plugin daemon
   plugin_daemon:
+    env_file:
+      - middleware-takin.env
     image: langgenius/dify-plugin-daemon:0.0.3-local
     restart: always
     environment:
@@ -76,6 +78,8 @@ services:
   # for more information, please refer to
   # https://docs.dify.ai/learn-more/faq/install-faq#id-18.-why-is-ssrf_proxy-needed
   ssrf_proxy:
+    env_file:
+      - middleware-takin.env
     image: ubuntu/squid:latest
     restart: always
     volumes:
