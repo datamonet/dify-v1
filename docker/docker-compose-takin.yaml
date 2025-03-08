@@ -363,7 +363,10 @@ services:
       - ./nginx/https.conf.template:/etc/nginx/https.conf.template
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./nginx/docker-entrypoint.sh:/docker-entrypoint-mount.sh
-      - ./nginx/ssl:/etc/ssl # cert dir (legacy)
+      # SSL证书目录映射：将服务器上的 /etc/ssl 目录挂载到容器内的 /etc/ssl
+      # 请将您的SSL证书(takin.crt)和私钥(takin.key)放在服务器的 /etc/ssl/ 目录下
+      # 注意：这个目录独立于代码仓库，方便证书管理且不影响代码版本控制
+      - /etc/ssl:/etc/ssl
       - ./volumes/certbot/conf/live:/etc/letsencrypt/live # cert dir (with certbot container)
       - ./volumes/certbot/conf:/etc/letsencrypt
       - ./volumes/certbot/www:/var/www/html
