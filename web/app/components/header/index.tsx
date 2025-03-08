@@ -30,7 +30,7 @@ const navClassName = `
 `
 
 const Header = () => {
-  const { isCurrentWorkspaceEditor, isCurrentWorkspaceDatasetOperator } = useAppContext()
+  const { isCurrentWorkspaceOwner,isCurrentWorkspaceEditor, isCurrentWorkspaceDatasetOperator } = useAppContext()
   const selectedSegment = useSelectedLayoutSegment()
   const media = useBreakpoints()
   const isMobile = media === MediaType.mobile
@@ -96,9 +96,12 @@ const Header = () => {
       }
       <div className='flex items-center shrink-0'>
         <EnvNav />
-        <div className='mr-3'>
-          <PluginsNav />
-        </div>
+        {/* takin commadnd: hidden workspace */}
+        {isCurrentWorkspaceOwner && (
+          <div className='mr-3'>
+            <PluginsNav />
+          </div>
+        )}
         {/* takin commadnd: 积分 */}
         <Credits />
         <AccountDropdown isMobile={isMobile} />

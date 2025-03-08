@@ -39,7 +39,7 @@ class RecommendedAppService:
             db.select(RecommendedApp)
             .select_from(RecommendedApp)
             .join(App, RecommendedApp.app_id == App.id)
-            .join(Account, Account.id == App.user_id)
+            .join(Account, Account.id == App.created_by)
             .where(*filters)
             .order_by(RecommendedApp.created_at.desc()),
             page=args["page"],
@@ -48,7 +48,7 @@ class RecommendedAppService:
         )
 
         # 获取所有 app 对应的 user_id 和 email
-        user_ids = [app.app.user_id for app in recommended_apps.items]
+        user_ids = [app.app.created_by for app in recommended_apps.items]
         accounts_cursor = db.session.query(Account.id, Account.email).filter(Account.id.in_(user_ids)).all()
         email_to_name = {
             account.email: account.email for account in accounts_cursor
@@ -83,7 +83,7 @@ class RecommendedAppService:
         # 将用户名称嵌入到推荐应用数据中
         for app in recommended_apps.items:
             # 获取 app 的 email 通过 user_id
-            email = next((account.email for account in accounts_cursor if account.id == app.app.user_id), None)
+            email = next((account.email for account in accounts_cursor if account.id == app.app.created_by), None)
             # 根据 email 获取对应的用户名
             app.app.username = email_to_name.get(email)
 

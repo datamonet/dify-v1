@@ -18,10 +18,15 @@ import PluginDetailPanel from '@/app/components/plugins/plugin-detail-panel'
 import { useSelector as useAppContextSelector } from '@/context/app-context'
 import { useAllToolProviders } from '@/service/use-tools'
 import { useInstalledPluginList, useInvalidateInstalledPluginList } from '@/service/use-plugins'
+import { useAppContext } from '@/context/app-context'
 
 const ProviderList = () => {
   const { t } = useTranslation()
   const containerRef = useRef<HTMLDivElement>(null)
+  // takin command:hidden  builtin page
+  const { isCurrentWorkspaceOwner } = useAppContext()
+ 
+
   const { enable_marketplace } = useAppContextSelector(s => s.systemFeatures)
 
   const [activeTab, setActiveTab] = useTabSearchParams({
@@ -131,8 +136,9 @@ const ProviderList = () => {
           {!filteredCollectionList.length && activeTab === 'builtin' && (
             <Empty lightCard text={t('tools.noTools')} className='px-12 h-[224px]' />
           )}
+          {/* takin command:hidden  builtin page */}
           {
-            enable_marketplace && activeTab === 'builtin' && (
+            isCurrentWorkspaceOwner && enable_marketplace && activeTab === 'builtin' && (
               <Marketplace
                 onMarketplaceScroll={() => {
                   containerRef.current?.scrollTo({ top: containerRef.current.scrollHeight, behavior: 'smooth' })

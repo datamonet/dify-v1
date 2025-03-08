@@ -131,7 +131,7 @@ class AppService:
         app.icon = args["icon"]
         app.icon_background = args["icon_background"]
         app.tenant_id = tenant_id
-        app.user_id = account.id  # takin command: 增加用户id
+        app.created_by = account.id  # takin command: 增加用户id
         app.api_rph = args.get("api_rph", 0)
         app.api_rpm = args.get("api_rpm", 0)
         app.created_by = account.id
