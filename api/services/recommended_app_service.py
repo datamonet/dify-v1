@@ -31,9 +31,9 @@ class RecommendedAppService:
             filters.append(App.name.ilike(f"%{name}%"))
             
         if args["mode"] == "recommended":
-            filters.append(Account.email == "curator@takin.ai")
+            filters.append(Account.email == "admin@takin.ai")
         else:
-            filters.append(Account.email != "curator@takin.ai")  
+            filters.append(Account.email != "admin@takin.ai")  
             
         recommended_apps = db.paginate(
             db.select(RecommendedApp)
