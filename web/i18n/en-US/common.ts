@@ -97,6 +97,7 @@ const translation = {
     modifiedSuccessfully: 'Modified successfully',
     modifiedUnsuccessfully: 'Modified unsuccessfully',
     copySuccessfully: 'Copied successfully',
+    copyLinkSuccessfully: 'Copied link to clipboard',
     paySucceeded: 'Payment succeeded',
     payCancelled: 'Payment cancelled',
     generatedSuccessfully: 'Generated successfully',
