@@ -92,7 +92,8 @@ class WordExtractor(BaseExtractor):
                         if image_ext is None:
                             continue
                         file_uuid = str(uuid.uuid4())
-                        file_key = "image_files/" + self.tenant_id + "/" + file_uuid + "." + image_ext
+                        # takin command:change s3 storage path
+                        file_key = "dify/image_files/" + self.tenant_id + "/" + file_uuid + "." + image_ext
                         mime_type, _ = mimetypes.guess_type(file_key)
                         storage.save(file_key, response.content)
                     else:

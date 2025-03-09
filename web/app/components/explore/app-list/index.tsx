@@ -1,20 +1,20 @@
 'use client'
 
-import { lowerCase } from 'lodash-es'
-import React, { useEffect, useRef, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import React, { useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { useContext } from 'use-context-selector'
-import useSWRInfinite from 'swr/infinite'
+import useSWR from 'swr'
 import { useDebounceFn } from 'ahooks'
 import Toast from '../../base/toast'
 import s from './style.module.css'
 import cn from '@/utils/classnames'
 import ExploreContext from '@/context/explore-context'
+import type { App } from '@/models/explore'
 import Category from '@/app/components/explore/category'
 import AppCard from '@/app/components/explore/app-card'
-import { fetchAppDetail, fetchExploreAppList } from '@/service/explore'
-import { fetchAppList as appList, importDSL } from '@/service/apps'
+import { fetchAppDetail, fetchAppList } from '@/service/explore'
+import { importDSL } from '@/service/apps'
 import { useTabSearchParams } from '@/hooks/use-tab-searchparams'
 import CreateAppModal from '@/app/components/explore/create-app-modal'
 import type { CreateAppModalProps } from '@/app/components/explore/create-app-modal'
@@ -25,13 +25,7 @@ import { getRedirection } from '@/utils/app-redirection'
 import Input from '@/app/components/base/input'
 import { DSLImportMode } from '@/models/app'
 import { usePluginDependencies } from '@/app/components/workflow/plugin-dependency/hooks'
-import type { AppListResponse } from '@/models/app'
-import type { AppBasicInfo } from '@/models/explore'
-import StudioAppCard from '@/app/(commonLayout)/apps/AppCard'
-// takin command:增加share 卡片
-import { RiCloseLine } from '@remixicon/react'
-import Modal from '@/app/components/base/modal'
-import ShareAppCard from '@/app/components/explore/share-app-card'
+
 type AppsProps = {
   onSuccess?: () => void
 }
@@ -41,58 +35,14 @@ export enum PageType {
   CREATE = 'create',
 }
 
-const getKey = (
-  pageIndex: number,
-  previousPageData: AppListResponse,
-  tags: string[],
-  keywords: string,
-) => {
-  if (!pageIndex || previousPageData.has_more) {
-    const params: any = {
-      url: 'apps',
-      params: { page: pageIndex + 1, limit: 10, name: keywords },
-    }
-
-    params.params.tag_ids = tags
-    return params
-  }
-  return null
-}
-
-const getExploreKey = (
-  pageIndex: number,
-  previousPageData: AppListResponse,
-  mode: string,
-  keywords: string,
-) => {
-  if (previousPageData && previousPageData.total <= (pageIndex) * previousPageData.limit)
-    return null
-
-  const params: any = {
-    url: 'explore/apps',
-    params: {
-      page: pageIndex + 1,
-      limit: 10,
-      mode: lowerCase(mode),
-      name: keywords,
-    },
-  }
-  return params
-}
-
-
 const Apps = ({
   onSuccess,
 }: AppsProps) => {
   const { t } = useTranslation()
   const { isCurrentWorkspaceEditor } = useAppContext()
   const { push } = useRouter()
-  const [showShare, setShowShare] = useState('')
-  const [detailApp, setDetailApp] = useState<AppBasicInfo | undefined>()
-  const searchParams = useSearchParams()
-  const searchParamsAppId = searchParams.get('id')
-  const searchParamsCategory = searchParams.get('category')
   const { hasEditPermission } = useContext(ExploreContext)
+  const allCategoriesEn = t('explore.apps.allCategories', { lng: 'en' })
 
   const [keywords, setKeywords] = useState('')
   const [searchKeywords, setSearchKeywords] = useState('')
@@ -108,63 +58,62 @@ const Apps = ({
 
   const [currentType, setCurrentType] = useState<string>('')
   const [currCategory, setCurrCategory] = useTabSearchParams({
-    defaultTab: 'recommended',
+    defaultTab: '',
     disableSearchParams: false,
   })
-  const anchorRef = useRef<HTMLDivElement>(null)
 
   const {
-    data: exploreAppList,
-    isLoading,
-    mutate: exploreAppMutate,
-    setSize: exploreAppSetSize,
-  } = useSWRInfinite(
-    (pageIndex: number, previousPageData: AppListResponse) => {
-      if (currCategory === 'favourite')
-        return null
-      return getExploreKey(
-        pageIndex,
-        previousPageData,
-        currCategory,
-        searchKeywords,
-      )
+    data: { categories, allList },
+  } = useSWR(
+    ['/explore/apps'],
+    () =>
+      fetchAppList().then(({ categories, recommended_apps }) => ({
+        categories,
+        allList: recommended_apps.sort((a, b) => a.position - b.position),
+      })),
+    {
+      fallbackData: {
+        categories: [],
+        allList: [],
+      },
     },
-    fetchExploreAppList,
-    { revalidateFirstPage: true },
   )
 
-  const { data, mutate, setSize } = useSWRInfinite(
-    (pageIndex: number, previousPageData: AppListResponse) =>
-      getKey(
-        pageIndex,
-        previousPageData,
-        ['b0524f83-eb2d-4ede-b654-b1a2b9d5fb00'],
-        searchKeywords,
-      ),
-    appList,
-    { revalidateFirstPage: true },
-  )
-
-
-  useEffect(() => {
-    let observer: IntersectionObserver | undefined
-    if (anchorRef.current) {
-      observer = new IntersectionObserver(
-        (entries) => {
-          if (entries[0].isIntersecting) {
-            currCategory === 'favourite'
-              ? setSize((size: number) => size + 1)
-              : exploreAppSetSize((size: number) => size + 1)
-          }
-        },
-        { rootMargin: '100px' },
-      )
-      observer.observe(anchorRef.current)
+  const filteredList = useMemo(() => {
+    if (currCategory === allCategoriesEn) {
+      if (!currentType)
+        return allList
+      else if (currentType === 'chatbot')
+        return allList.filter(item => (item.app.mode === 'chat' || item.app.mode === 'advanced-chat'))
+      else if (currentType === 'agent')
+        return allList.filter(item => (item.app.mode === 'agent-chat'))
+      else
+        return allList.filter(item => (item.app.mode === 'workflow'))
     }
-    return () => observer?.disconnect()
-  }, [anchorRef, mutate, exploreAppMutate, currCategory, setSize, exploreAppSetSize])
+    else {
+      if (!currentType)
+        return allList.filter(item => item.category === currCategory)
+      else if (currentType === 'chatbot')
+        return allList.filter(item => (item.app.mode === 'chat' || item.app.mode === 'advanced-chat') && item.category === currCategory)
+      else if (currentType === 'agent')
+        return allList.filter(item => (item.app.mode === 'agent-chat') && item.category === currCategory)
+      else
+        return allList.filter(item => (item.app.mode === 'workflow') && item.category === currCategory)
+    }
+  }, [currentType, currCategory, allCategoriesEn, allList])
 
-  const [currApp, setCurrApp] = React.useState<AppBasicInfo | null>(null)
+  const searchFilteredList = useMemo(() => {
+    if (!searchKeywords || !filteredList || filteredList.length === 0)
+      return filteredList
+
+    const lowerCaseSearchKeywords = searchKeywords.toLowerCase()
+
+    return filteredList.filter(item =>
+      item.app && item.app.name && item.app.name.toLowerCase().includes(lowerCaseSearchKeywords),
+    )
+  }, [searchKeywords, filteredList])
+
+  const [currApp, setCurrApp] = React.useState<App | null>(null)
   const [isShowCreateModal, setIsShowCreateModal] = React.useState(false)
   const { handleCheckPluginDependencies } = usePluginDependencies()
   const onCreate: CreateAppModalProps['onConfirm'] = async ({
@@ -204,27 +153,7 @@ const Apps = ({
     }
   }
 
-  const getDetail = async (id: string) => {
-    await fetchAppDetail(id).then((res) => {
-      setDetailApp(res)
-      setShowShare(id)
-    })
-  }
-
-  useEffect(() => {
-    if (searchParamsCategory) {
-      setCurrCategory(searchParamsCategory)
-      exploreAppMutate()
-    }
-  }, [searchParamsCategory])
-
-  useEffect(() => {
-    if (searchParamsAppId)
-      getDetail(searchParamsAppId)
-  }, [searchParamsAppId])
-
-
-  if (isLoading && data?.length === 0) {
+  if (!categories || categories.length === 0) {
     return (
       <div className="flex h-full items-center">
         <Loading type="area" />
@@ -246,9 +175,11 @@ const Apps = ({
         'flex items-center justify-between mt-6 px-12',
       )}>
         <>
-          <Category    
+          <Category
+            list={categories}
             value={currCategory}
             onChange={setCurrCategory}
+            allCategoriesEn={allCategoriesEn}
           />
         </>
         <Input
@@ -270,87 +201,33 @@ const Apps = ({
             s.appList,
             'grid content-start shrink-0 gap-4 px-6 sm:px-12',
           )}>
-        
-          {currCategory === 'favourite'
-            ? (
-              <>
-                {(data?.flatMap((data: any) => data?.data || []) || []).length
-              > 0
-                  ? (
-                    data
-                      ?.flatMap((data: any) => data?.data || [])
-                      .map(app => (
-                        <StudioAppCard key={app.id} app={app} onRefresh={mutate} />
-                      ))
-                  )
-                  : (
-                    <div className="text-sm text-zinc-400 px-4">
-                  No favourite apps have been added yet
-                    </div>
-                  )}
-              </>
-            )
-            : (
-              <>
-                {exploreAppList
-                  ?.flatMap((data: any) => data?.data || [])
-                  .map(app => (
-                    <AppCard
-                      key={app.app_id}
-                      isExplore
-                      app={app}
-                      canCreate={hasEditPermission}
-                      onCreate={() => {
-                        setCurrApp(app.app)
-                        setIsShowCreateModal(true)
-                      }}
-                    />
-                  ))}
-              </>
-            )}
+          {searchFilteredList.map(app => (
+            <AppCard
+              key={app.app_id}
+              isExplore
+              app={app}
+              canCreate={hasEditPermission}
+              onCreate={() => {
+                setCurrApp(app)
+                setIsShowCreateModal(true)
+              }}
+            />
+          ))}
         </nav>
-        <div ref={anchorRef} className="h-0" />
       </div>
-
       {isShowCreateModal && (
         <CreateAppModal
-          appIconType={currApp?.icon_type || 'emoji'}
-          appIcon={currApp?.icon || ''}
-          appIconBackground={currApp?.icon_background || ''}
-          appIconUrl={currApp?.icon_url}
-          appName={currApp?.name || ''}
-          appDescription={currApp?.description || ''}
+          appIconType={currApp?.app.icon_type || 'emoji'}
+          appIcon={currApp?.app.icon || ''}
+          appIconBackground={currApp?.app.icon_background || ''}
+          appIconUrl={currApp?.app.icon_url}
+          appName={currApp?.app.name || ''}
+          appDescription={currApp?.app.description || ''}
           show={isShowCreateModal}
           onConfirm={onCreate}
           onHide={() => setIsShowCreateModal(false)}
         />
       )}
-           {/* takin command:增加share 卡片 */}
-           <Modal
-        isShow={!!showShare}
-        className="!bg-transparent !shadow-none relative"
-        onClose={() => setShowShare('')}
-        wrapperClassName="pt-[60px]"
-      >
-        <div
-          className="absolute right-4 top-4 p-4 cursor-pointer"
-          onClick={() => setShowShare('')}
-        >
-          <RiCloseLine className="w-4 h-4 text-gray-500" />
-        </div>
-        {detailApp && (
-          <ShareAppCard
-            key={detailApp.id}
-            isExplore
-            app={detailApp}
-            canCreate={hasEditPermission}
-            onCreate={() => {
-              setCurrApp(detailApp)
-              setIsShowCreateModal(true)
-            }}
-          />
-        )}
-      </Modal>
     </div>
   )
 }

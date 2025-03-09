@@ -61,7 +61,8 @@ class FileService:
             # end_user
             current_tenant_id = user.tenant_id
 
-        file_key = "upload_files/" + (current_tenant_id or "") + "/" + file_uuid + "." + extension
+        # takin command:change s3 storage path
+        file_key = "dify/upload_files/" + (current_tenant_id or "") + "/" + file_uuid + "." + extension
 
         # save file to storage
         storage.save(file_key, content)
@@ -107,7 +108,8 @@ class FileService:
             text_name = text_name[:200]
         # user uuid as file name
         file_uuid = str(uuid.uuid4())
-        file_key = "upload_files/" + current_user.current_tenant_id + "/" + file_uuid + ".txt"
+        # takin command:change s3 storage path
+        file_key = "dify/upload_files/" + current_user.current_tenant_id + "/" + file_uuid + ".txt"
 
         # save file to storage
         storage.save(file_key, text.encode("utf-8"))

@@ -63,15 +63,8 @@ class RecommendedAppService:
                 f'{os.getenv("TAKIN_API_URL", "http://127.0.0.1:3000")}/api/external/user',
                 json={"emails": emails}
             )
-            print(response.json())
-            users_data = response.json().get('data', [])
-            
-            print(users_data)
             # 更新用户名映射
-            email_to_name.update({
-                user['email']: user['name'] or user['email'].split('@')[0]
-                for user in users_data
-            })
+            email_to_name.update(response.json().get('data', {}))
             
         except Exception as e:
             print(f"Error fetching user data: {str(e)}")
@@ -133,6 +126,20 @@ class RecommendedAppService:
 
     # takin command:publish api,创建推荐应用
     def create_app(self, args: dict) -> dict:
+        # 检查App是否存在
+        app_to_update = db.session.query(App).filter_by(id=args["app_id"]).first()
+        if not app_to_update:
+            raise ValueError(f"App with id {args['app_id']} does not exist")
+
+        # 检查是否已存在
+        existing_app = db.session.query(RecommendedApp).filter_by(app_id=args["app_id"]).first()
+        if existing_app:
+            # 如果已存在，更新updated_at
+            existing_app.updated_at = datetime.datetime.utcnow()
+            db.session.commit()
+            return {"id": existing_app.id}
+
+        # 如果不存在，创建新的推荐
         app = RecommendedApp(
             app_id=args["app_id"],
             category=args.get("category", ""),
@@ -143,12 +150,10 @@ class RecommendedAppService:
 
         # 将app添加到session并提交
         db.session.add(app)
+        
+        # 更新app的公开状态
+        app_to_update.is_public = True
         db.session.commit()
-
-        app_to_update = db.session.query(App).filter_by(id=args["app_id"]).first()
-        if app_to_update:
-            app_to_update.is_public = True
-            db.session.commit()
 
         return {"id": app.id}
 

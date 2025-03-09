@@ -68,7 +68,8 @@ class FirecrawlApp:
                         url_data = self._extract_common_fields(item)
                         url_data_list.append(url_data)
                 if url_data_list:
-                    file_key = "website_files/" + job_id + ".txt"
+                    # takin command:change s3 storage path
+                    file_key = "dify/website_files/" + job_id + ".txt"
                     try:
                         if storage.exists(file_key):
                             storage.delete(file_key)

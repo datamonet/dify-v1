@@ -67,7 +67,8 @@ class ToolFileManager:
         extension = guess_extension(mimetype) or ".bin"
         unique_name = uuid4().hex
         filename = f"{unique_name}{extension}"
-        filepath = f"tools/{tenant_id}/{filename}"
+        # takin command:change s3 storage path
+        filepath = f"dify/tools/{tenant_id}/{filename}"
         storage.save(filepath, file_binary)
 
         tool_file = ToolFile(
@@ -105,7 +106,8 @@ class ToolFileManager:
         extension = guess_extension(mimetype) or ".bin"
         unique_name = uuid4().hex
         filename = f"{unique_name}{extension}"
-        filepath = f"tools/{tenant_id}/{filename}"
+        # takin command:change s3 storage path
+        filepath = f"dify/tools/{tenant_id}/{filename}"
         storage.save(filepath, blob)
 
         tool_file = ToolFile(
