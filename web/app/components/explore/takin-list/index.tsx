@@ -80,7 +80,6 @@ const getExploreKey = (
   return params
 }
 
-
 const Apps = ({
   onSuccess,
 }: AppsProps) => {
@@ -105,7 +104,6 @@ const Apps = ({
     setKeywords(value)
     handleSearch()
   }
-
 
   const [currCategory, setCurrCategory] = useTabSearchParams({
     defaultTab: 'recommended',
@@ -145,7 +143,6 @@ const Apps = ({
     { revalidateFirstPage: true },
   )
 
-
   useEffect(() => {
     let observer: IntersectionObserver | undefined
     if (anchorRef.current) {
@@ -176,7 +173,7 @@ const Apps = ({
     description,
   }) => {
     const { export_data, mode } = await fetchAppDetail(
-      currApp?.app.id as string,
+      currApp?.id as string,
     )
     try {
       const app = await importDSL({
@@ -224,7 +221,6 @@ const Apps = ({
       getDetail(searchParamsAppId)
   }, [searchParamsAppId])
 
-
   if (isLoading && data?.length === 0) {
     return (
       <div className="flex h-full items-center">
@@ -256,23 +252,23 @@ const Apps = ({
       )
     }
 
-    return apps.map(app => (
+    return apps.map((app: any) => (
       currCategory === 'favourite'
         ? <StudioAppCard
-            key={app.id}
-            app={app}
-            onRefresh={mutate}
-          />
+          key={app.id}
+          app={app}
+          onRefresh={mutate}
+        />
         : <AppCard
-            key={app.app_id}
-            isExplore
-            app={app}
-            canCreate={hasEditPermission}
-            onCreate={() => {
-              setCurrApp(app.app)
-              setIsShowCreateModal(true)
-            }}
-          />
+          key={app.app_id}
+          isExplore
+          app={app}
+          canCreate={hasEditPermission}
+          onCreate={() => {
+            setCurrApp(app.app)
+            setIsShowCreateModal(true)
+          }}
+        />
     ))
   }
 
@@ -288,7 +284,7 @@ const Apps = ({
       <div className={cn(
         'flex items-center justify-between mt-6 px-12',
       )}>
-        <Category    
+        <Category
           value={currCategory}
           onChange={setCurrCategory}
         />
