@@ -45,7 +45,7 @@ export async function getUserInfo() {
   }
 }
 
-const isDevelopment = process.env.NEXT_PUBLIC_DEPLOY_ENV === 'DEVELOPMENT'
+const isDevelopment = (process.env.NODE_ENV || '').toUpperCase() === 'production'
 
 const tokenName = isDevelopment
   ? 'authjs.session-token'
