@@ -45,20 +45,20 @@ export async function getUserInfo() {
   }
 }
 
-const isDevelopment = (process.env.NODE_ENV || '').toUpperCase() === 'production'
+const isProduction = (process.env.NODE_ENV || '').toLowerCase() === 'production'
 
-const tokenName = isDevelopment
-  ? 'authjs.session-token'
-  : '__Secure-authjs.session-token'
+const tokenName = isProduction
+  ? '__Secure-authjs.session-token'
+  : 'authjs.session-token'
 
 export async function deleteCookie() {
   const cookieOptions = {
     // In development, omitting the domain allows the cookie to work on any local domain (localhost, 127.0.0.1, etc.)
     // In production, set the domain to .takin.ai for cross-subdomain support
-    domain: isDevelopment ? undefined : '.takin.ai',
+    domain: isProduction ? '.takin.ai' : undefined,
     path: '/',
     expires: new Date(0),
-    secure: !isDevelopment,
+    secure: isProduction,
     httpOnly: true,
   }
   cookies().set(tokenName, '', cookieOptions)
