@@ -34,7 +34,7 @@ const PermissionsRadio = ({
   ]
 
   return (
-    <div className={classNames('flex justify-between w-full flex-wrap gap-y-2')}>
+    <div className={classNames('flex justify-between w-full gap-x-2')}>
       {
         options.map(option => (
           <div

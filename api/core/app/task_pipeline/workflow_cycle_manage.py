@@ -576,7 +576,7 @@ class WorkflowCycleManage:
             )
             # Add tool name and label to extras
             response.data.extras["tool_name"] = node_data.tool_name
-            response.data.extras["tool_label"] = tool_runtime.identity.label
+            response.data.extras["tool_label"] = tool_runtime.entity.identity.name
 
         return response
 
