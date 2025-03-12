@@ -1,13 +1,12 @@
-from typing import Optional
 import os
+from typing import Optional
 
+import requests
 from flask_sqlalchemy.pagination import Pagination
-
 
 from configs import dify_config
 from models.model import Account, App, RecommendedApp, db
 from services.recommend_app.recommend_app_factory import RecommendAppRetrievalFactory
-import requests
 
 
 class RecommendedAppService:

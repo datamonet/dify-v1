@@ -17,6 +17,12 @@ from core.entities.knowledge_entities import IndexingEstimate, PreviewDetail, QA
 from core.errors.error import ProviderTokenNotInitError
 from core.model_manager import ModelInstance, ModelManager
 from core.model_runtime.entities.model_entities import ModelType, PriceType
+from core.model_runtime.model_providers.__base.large_language_model import (
+    LargeLanguageModel,
+)
+from core.model_runtime.model_providers.__base.text_embedding_model import (
+    TextEmbeddingModel,
+)
 from core.rag.cleaner.clean_processor import CleanProcessor
 from core.rag.datasource.keyword.keyword_factory import Keyword
 from core.rag.docstore.dataset_docstore import DatasetDocumentStore
@@ -39,12 +45,6 @@ from models.dataset import ChildChunk, Dataset, DatasetProcessRule, DocumentSegm
 from models.dataset import Document as DatasetDocument
 from models.model import UploadFile
 from services.feature_service import FeatureService
-from core.model_runtime.model_providers.__base.text_embedding_model import (
-    TextEmbeddingModel,
-)
-from core.model_runtime.model_providers.__base.large_language_model import (
-    LargeLanguageModel,
-)
 
 
 class IndexingRunner:

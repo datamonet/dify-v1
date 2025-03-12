@@ -558,14 +558,14 @@ const StepTwo = ({
     onStepChange && onStepChange(+1)
     isSetting && onSave && onSave()
 
-    console.log('文件上传更新积分，扣费',datasetId,  res)
+    // console.log('文件上传更新积分，扣费',datasetId,  res)
     let cost = 0
     try {
       const response = await fetchIndexingEstimateBatch({
         datasetId: (datasetId || res?.dataset?.id) || '',
         batchId: res?.batch as string,
       })
-      console.log('文件上传更新积分，扣费',response.total_price)
+      // console.log('文件上传更新积分，扣费',response.total_price)
       if (response)
         cost = response.total_price
     }
