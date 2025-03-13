@@ -118,7 +118,7 @@ const AppPublisher = ({
     catch {
       setPublished(false)
     }
-  }, [onPublish])
+  }, [onPublish, published]) // takin command:only call onPublish when published changes
 
   const handleRestore = useCallback(async () => {
     try {

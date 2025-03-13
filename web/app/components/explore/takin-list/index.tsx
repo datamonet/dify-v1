@@ -241,7 +241,16 @@ const Apps = ({
 
   // 渲染应用列表内容
   const renderAppList = () => {
-    if (apps.length === 0) {
+    // Check if data is still loading
+    if (isLoading) {
+      return (
+        <div className="flex h-full items-center">
+          <Loading type="area" />
+        </div>
+      )
+    }
+
+    if (!isLoading && apps.length === 0) {
       return (
         <div className="text-sm text-zinc-400 px-4">
           {currCategory === 'favourite'
