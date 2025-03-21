@@ -13,7 +13,7 @@ const translation = {
     permissions: 'Permissions',
     permissionsOnlyMe: 'Only me',
       // takin command:change this i18n
-    permissionsAllMember: 'All people',
+    permissionsAllMember: 'Everyone',
     permissionsInvitedMembers: 'Partial team members',
     me: '(You)',
     indexMethod: 'Index Method',

@@ -118,7 +118,7 @@ const AppPublisher = ({
     catch {
       setPublished(false)
     }
-  }, [onPublish, published]) // takin command:only call onPublish when published changes
+  }, [onPublish, published, posted, handlePosted]) // takin command: include all dependencies
 
   const handleRestore = useCallback(async () => {
     try {
