@@ -76,7 +76,6 @@ import {
   correctModelProvider,
   correctToolProvider,
 } from '@/utils'
-import PluginDependency from '@/app/components/workflow/plugin-dependency'
 
 type PublishConfig = {
   modelConfig: ModelConfig
@@ -1053,7 +1052,8 @@ const Configuration: FC = () => {
               onAutoAddPromptVariable={handleAddPromptVariable}
             />
           )}
-          <PluginDependency />
+          {/* takin command: takin code隐藏插件检查弹窗 */}
+          {/* <PluginDependency /> */}
         </>
       </FeaturesProvider>
     </ConfigContext.Provider>
