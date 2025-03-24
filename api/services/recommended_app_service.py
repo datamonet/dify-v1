@@ -168,5 +168,5 @@ class RecommendedAppService:
             db.session.delete(app_to_delete)
             db.session.commit()
         except Exception as e:
-            logging.exception(f"An error occurred: {e}")
+            # logging.exception(f"An error occurred: {e}")
             db.session.rollback()
