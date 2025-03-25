@@ -559,7 +559,7 @@ const StepTwo = ({
     isSetting && onSave && onSave()
 
     // console.log('文件上传更新积分，扣费',datasetId,  res)
-    let cost = 0
+    let usd = 0
     try {
       const response = await fetchIndexingEstimateBatch({
         datasetId: (datasetId || res?.dataset?.id) || '',
@@ -567,21 +567,22 @@ const StepTwo = ({
       })
       // console.log('文件上传更新积分，扣费',response.total_price)
       if (response)
-        cost = response.total_price
+        usd = response.total_price
     }
     catch (err) {
-      cost = 1
+      // default cost usd 
+      usd = 0.01
       console.error(err)
     }
     // takin command:文件上传更新积分，扣费
-    await updateCreditsByKnowledge(
+    const totalCreditCost = await updateCreditsByKnowledge(
       {
-        usage: cost,
+        usage: usd,
         reason: 'Dify Documents',
         source: { dataset_id: (datasetId || res?.dataset?.id) || '' },
       },
     )
-    const newCredits = parseFloat(((userProfile?.credits || 0) - cost).toFixed(2))
+    const newCredits = parseFloat(((userProfile?.credits || 0) - totalCreditCost).toFixed(2))
     updateCreditsWithoutRerender(newCredits)
 
   }
