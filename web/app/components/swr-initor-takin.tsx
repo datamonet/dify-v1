@@ -26,7 +26,7 @@ const SwrInitor = ({
   })
 
   /**
-   * takin command:获取takin cookie token;验证登录一般不会多过更改，直接copy一份，减少合并的冲突
+   * takin code:获取takin cookie token;验证登录一般不会多过更改，直接copy一份，减少合并的冲突
    * ↓
    * 有 token?
    * ├── 是 → 检查是否与 localStorage 中的 token 匹配

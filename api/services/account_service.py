@@ -101,7 +101,7 @@ class AccountService:
 
     @staticmethod
     def load_user(email: str) -> Account:
-        # takin command:使用用户的email查询
+        # takin code:使用用户的email查询
         account = Account.query.filter_by(email=email).first()
         if not account:
             return None
@@ -392,7 +392,7 @@ class AccountService:
     # def load_logged_in_account(*, account_id: str):
     #     return AccountService.load_user(account_id)
     
-    # takin command: 以上是原有的查询，以下是takin的查询
+    # takin code: 以上是原有的查询，以下是takin的查询
     
     @staticmethod
     def load_logged_in_account(*, email: str):

@@ -34,7 +34,7 @@ import WorkflowToolConfigureButton from '@/app/components/tools/workflow-tool/co
 import type { InputVar } from '@/app/components/workflow/types'
 import { appDefaultIconBackground } from '@/config'
 import type { PublishWorkflowParams } from '@/types/workflow'
-// takin command:import
+// takin code:import
 import PermissionsRadio from './permissions-radio'
 import useSWR from 'swr'
 import { createRecommendedApp, deleteRecommendedApp, fetchAppDetail, fetchAppList } from '@/service/explore'
@@ -90,7 +90,7 @@ const AppPublisher = ({
     return dayjs(time).locale(language === 'zh_Hans' ? 'zh-cn' : language.replace('_', '-')).fromNow()
   }, [language])
 
-  // takin command:设置app的公开状态
+  // takin code:设置app的公开状态
   const handlePosted = async () => {
     if (postStatus === posted)
       return
@@ -110,7 +110,7 @@ const AppPublisher = ({
 
   const handlePublish = useCallback(async (params?: ModelAndParameter | PublishWorkflowParams) => {
     try {
-      // takin command:设置app的公开状态
+      // takin code:设置app的公开状态
       await handlePosted()
       await onPublish?.(params)
       setPublished(true)
@@ -118,7 +118,7 @@ const AppPublisher = ({
     catch {
       setPublished(false)
     }
-  }, [onPublish, published, posted, handlePosted]) // takin command: include all dependencies
+  }, [onPublish, published, posted, handlePosted]) // takin code: include all dependencies
 
   const handleRestore = useCallback(async () => {
     try {
@@ -272,7 +272,7 @@ const AppPublisher = ({
                         : (
                           <div className='flex gap-1'>
                             <span>{t('workflow.common.publish')}</span>
-                            {/* takin command:隐藏快捷键显示 */}
+                            {/* takin code:隐藏快捷键显示 */}
                             {/* <span>{t('workflow.common.publishUpdate')}</span> */}
                             {/* <div className='flex gap-0.5'>
                               {PUBLISH_SHORTCUT.map(key => (
@@ -288,7 +288,7 @@ const AppPublisher = ({
                 )
               }
             </div>
-            {/*takin command:add PermissionsRadio */}
+            {/*takin code:add PermissionsRadio */}
             <div className="px-4 py-2 flex flex-col">
               <div className="flex items-center text-sm h-6 text-text-tertiary">
                 {t('datasetSettings.form.permissions')}

@@ -12,7 +12,7 @@ import type { AppBasicInfo } from '@/models/explore'
 import cn from '@/utils/classnames'
 import { DSLImportMode } from '@/models/app'
 
-// takin command: studio展示所有的喜欢app
+// takin code: studio展示所有的喜欢app
 export const FavouriteTag: FC<{
   value: string[]
   onChange: (v: string[]) => void
@@ -39,7 +39,7 @@ export const FavouriteTag: FC<{
   )
 }
 
-// takin command: explore将公开的设为喜欢
+// takin code: explore将公开的设为喜欢
 export const FavouriteBtn: FC<{
   app: AppBasicInfo
 }> = ({ app }) => {

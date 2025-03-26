@@ -35,7 +35,7 @@ export default function AppSelector({ isMobile }: IAppSelector) {
   const { userProfile, langeniusVersionInfo, isCurrentWorkspaceOwner } = useAppContext()
   const { setShowAccountSettingModal } = useModalContext()
 
-  // takin command: 退出登录
+  // takin code: 退出登录
   const handleLogout = async () => {
     await deleteCookie('__Secure-next-auth.session-token')
 
@@ -98,7 +98,7 @@ export default function AppSelector({ isMobile }: IAppSelector) {
                     </div>
                   </Menu.Item>
                   <div className="px-1 py-1">
-                    {/* takin command：隐藏工作空间 */}
+                    {/* takin code：隐藏工作空间 */}
                     <Menu.Item>
                       {({ active }) => <Link
                         className={classNames(itemClassName, 'group',

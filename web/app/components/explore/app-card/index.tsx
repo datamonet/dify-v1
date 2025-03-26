@@ -31,7 +31,7 @@ const AppCard = ({
 
   const onClickCopy = () => {
     copy(`${window.location.origin}${pathname}?id=${app.app_id}`)
-    Toast.notify({ type: 'success', message: t('common.actionMsg.copyLinkSuccessfully') }) // takin command: add i18n k/v
+    Toast.notify({ type: 'success', message: t('common.actionMsg.copyLinkSuccessfully') }) // takin code: add i18n k/v
   }
   return (
     <div className={cn('relative overflow-hidden pb-2 group col-span-1 bg-components-panel-on-panel-item-bg border-[0.5px] border-components-panel-border rounded-lg shadow-sm flex flex-col transition-all duration-200 ease-in-out cursor-pointer hover:shadow-lg')}>
@@ -57,7 +57,7 @@ const AppCard = ({
             {appBasicInfo.mode === 'agent-chat' && <div className='truncate'>{t('app.types.agent').toUpperCase()}</div>}
             {appBasicInfo.mode === 'workflow' && <div className='truncate'>{t('app.types.workflow').toUpperCase()}</div>}
             {appBasicInfo.mode === 'completion' && <div className='truncate'>{t('app.types.completion').toUpperCase()}</div>}
-            {/* takin command: 增加卡片的作者 */}
+            {/* takin code: 增加卡片的作者 */}
             {appBasicInfo.username && <span className="px-2">By {appBasicInfo.username}</span>}
           </div>
         </div>

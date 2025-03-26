@@ -141,7 +141,7 @@ const Apps = () => {
           options={options}
         />
         <div className='flex items-center gap-2'>
-          {/* takin command: hidden workspace  */}
+          {/* takin code: hidden workspace  */}
           {/* <CheckboxWithLabel
             className='mr-2'
             label={t('app.showMyCreatedAppsOnly')}

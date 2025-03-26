@@ -81,6 +81,8 @@ document_status_fields = {
     "stopped_at": TimestampField,
     "completed_segments": fields.Integer,
     "total_segments": fields.Integer,
+    # takin code: from document_status_fields
+    "total_price": fields.Float(default=0),
 }
 
 document_status_fields_list = {"data": fields.List(fields.Nested(document_status_fields))}

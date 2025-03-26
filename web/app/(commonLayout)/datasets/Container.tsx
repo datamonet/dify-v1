@@ -48,7 +48,7 @@ const Container = () => {
   const options = useMemo(() => {
     return [
       { value: 'dataset', text: t('dataset.datasets') },
-      // takin command:hidden api page
+      // takin code:hidden api page
     ]
   }, [t])
 
@@ -98,7 +98,7 @@ const Container = () => {
         />
         {activeTab === 'dataset' && (
           <div className='flex items-center justify-center gap-2'>
-            {/* takin command: hidden workspace  */}
+            {/* takin code: hidden workspace  */}
             {/* {isCurrentWorkspaceOwner && <CheckboxWithLabel
               isChecked={includeAll}
               onChange={toggleIncludeAll}
@@ -131,7 +131,7 @@ const Container = () => {
       {activeTab === 'dataset' && (
         <>
           <Datasets containerRef={containerRef} tags={tagIDs} keywords={searchKeywords} includeAll={includeAll} />
-          {/* takin command:去除知识库底部 */}
+          {/* takin code:去除知识库底部 */}
           {/* <DatasetFooter /> */}
           {showTagManagementModal && (
             <TagManagementModal type='knowledge' show={showTagManagementModal} />

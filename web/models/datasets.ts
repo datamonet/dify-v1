@@ -206,6 +206,7 @@ export type IndexingStatusResponse = {
   stopped_at: any
   completed_segments: number
   total_segments: number
+  total_price: number // takin code:add total_price
 }
 export type IndexingStatusBatchResponse = {
   data: IndexingStatusResponse[]

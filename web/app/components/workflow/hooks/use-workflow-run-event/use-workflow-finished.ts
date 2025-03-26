@@ -4,7 +4,7 @@ import type { WorkflowFinishedResponse } from '@/types/workflow'
 import { useWorkflowStore } from '@/app/components/workflow/store'
 import { getFilesInLogs } from '@/app/components/base/file-uploader/utils'
 
-// takin command:扣费
+// takin code:扣费
 import { updateCreditsByWorkflow } from '@/app/api/pricing'
 import { useAppContext } from '@/context/app-context'
 
@@ -33,7 +33,7 @@ export const useWorkflowFinished = () => {
     })
 
     setWorkflowRunningData(newWorkflowRunningData)
-    // takin command:需要将newWorkflowRunningData赋值，方便传输到扣费函数中
+    // takin code:需要将newWorkflowRunningData赋值，方便传输到扣费函数中
     // console.log('newWorkflowRunningData', newWorkflowRunningData)
     // await updateUserCreditsWithTotalToken(userProfile.takin_id!, newWorkflowRunningData.result.total_tokens || 0, 'Dify Workflow', newWorkflowRunningData)
     const cost = await updateCreditsByWorkflow({

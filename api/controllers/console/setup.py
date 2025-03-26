@@ -104,4 +104,4 @@ def get_setup_status():
 
 
 api.add_resource(SetupApi, "/setup")
-api.add_resource(InsertApi, "/insert") #takin command:暴露一个api用于同步数据
+api.add_resource(InsertApi, "/insert") #takin code:暴露一个api用于同步数据

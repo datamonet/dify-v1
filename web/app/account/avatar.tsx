@@ -17,7 +17,7 @@ export default function AppSelector() {
   const { t } = useTranslation()
   const { userProfile } = useAppContext()
 
-  // takin command: 退出登录
+  // takin code: 退出登录
   const handleLogout = async () => {
     await logout({
       url: '/logout',

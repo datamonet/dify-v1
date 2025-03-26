@@ -28,7 +28,7 @@ import { usePluginDependencies } from '@/app/components/workflow/plugin-dependen
 import type { AppListResponse } from '@/models/app'
 import type { AppBasicInfo } from '@/models/explore'
 import StudioAppCard from '@/app/(commonLayout)/apps/AppCard'
-// takin command:增加share 卡片
+// takin code:增加share 卡片
 import { RiCloseLine } from '@remixicon/react'
 import Modal from '@/app/components/base/modal'
 import ShareAppCard from '@/app/components/explore/share-app-card'

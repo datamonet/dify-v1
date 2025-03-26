@@ -53,11 +53,11 @@ export default function AccountSetting({
   onCancel,
   activeTab = 'members',
 }: IAccountSettingProps) {
-  // takin command:初始值设定成语言
+  // takin code:初始值设定成语言
   const [activeMenu, setActiveMenu] = useState('language')
   const { t } = useTranslation()
   const { enableBilling, enableReplaceWebAppLogo } = useProviderContext()
-  // takin command:只有 workspace owner 才能設定
+  // takin code:只有 workspace owner 才能設定
   const { isCurrentWorkspaceDatasetOperator, isCurrentWorkspaceOwner } = useAppContext()
 
   const workplaceGroupItems = (() => {

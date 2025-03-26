@@ -34,7 +34,7 @@ import {
   getProcessedFiles,
   getProcessedFilesFromResponse,
 } from '@/app/components/base/file-uploader/utils'
-// takin command:导入扣费模块
+// takin code:导入扣费模块
 import { useAppContext } from '@/context/app-context'
 import { updateCreditsByAgent } from '@/app/api/pricing'
 
@@ -474,7 +474,7 @@ export const useChat = (
             responseItem,
             parentId: data.parent_message_id,
           })
-          // takin command:导入扣费模块。
+          // takin code:导入扣费模块。
           const cost = await updateCreditsByAgent({
             responseItem,
             agentTools: config?.agent_mode?.tools || [],

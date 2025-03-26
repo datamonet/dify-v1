@@ -50,7 +50,7 @@ class InstalledAppWorkflowRunApi(InstalledAppResource):
                 user=current_user,
                 args=args,
                 # invoke_from=InvokeFrom.EXPLORE,
-                invoke_from=InvokeFrom.DEBUGGER,  # takin command: explore需要增加tracking用于收费计算
+                invoke_from=InvokeFrom.DEBUGGER,  # takin code: explore需要增加tracking用于收费计算
                 streaming=True,
             )
 

@@ -57,7 +57,7 @@ const SideBar: FC<IExploreSideBarProps> = ({
   const media = useBreakpoints()
   const isMobile = media === MediaType.mobile
 
-   // takin command:增加loading
+   // takin code:增加loading
    const fetchInstalledAppList = async () => {
     try {
       setIsLoading(true)

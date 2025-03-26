@@ -170,7 +170,7 @@ const StepOne = ({
                         {t('datasetCreation.stepOne.dataSourceType.file')}
                       </span>
                     </div>
-                    {/* takin command: enable notion */}
+                    {/* takin code: enable notion */}
                     {/* <div
                       className={cn(
                         s.dataSourceItem,

@@ -30,7 +30,7 @@ class InstalledAppsListApi(Resource):
         #     InstalledApp.tenant_id == current_tenant_id
         # ).all()
 
-        # takin command：适配Takin，需要进行用户id的过滤，达到数据隔离的效果。直接使用 join连表查询app的user id
+        # takin code：适配Takin，需要进行用户id的过滤，达到数据隔离的效果。直接使用 join连表查询app的user id
 
         if app_id:
             installed_apps = (

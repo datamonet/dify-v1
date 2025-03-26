@@ -331,7 +331,7 @@ const Workflow: FC<WorkflowProps> = memo(({
         )
       }
       <LimitTips />
-      {/* takin command: takin code隐藏插件检查弹窗 */}
+      {/* takin code: takin code隐藏插件检查弹窗 */}
       {/* <PluginDependency /> */}
       <ReactFlow
         nodeTypes={nodeTypes}

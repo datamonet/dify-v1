@@ -11,7 +11,7 @@ from services.recommended_app_service import RecommendedAppService
 app_fields = {
     "id": fields.String,
     "name": fields.String,
-    "username": fields.String, # takin command: username
+    "username": fields.String, # takin code: username
     "mode": fields.String,
     "icon": fields.String,
     "icon_type": fields.String,
@@ -35,7 +35,7 @@ recommended_app_fields = {
 #     "recommended_apps": fields.List(fields.Nested(recommended_app_fields)),
 #     "categories": fields.List(fields.String),
 # }
-# takin command: 增加page and limit
+# takin code: 增加page and limit
 
 recommended_app_list_fields = {
     "page": fields.Integer,
@@ -53,7 +53,7 @@ class RecommendedAppListApi(Resource):
     def get(self):
         # language args
         parser = reqparse.RequestParser()
-         # takin command: page and limit
+         # takin code: page and limit
         parser.add_argument(
             "page",
             type=inputs.int_range(1, 99999),

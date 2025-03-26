@@ -23,7 +23,7 @@ import { useAppContext } from '@/context/app-context'
 const ProviderList = () => {
   const { t } = useTranslation()
   const containerRef = useRef<HTMLDivElement>(null)
-  // takin command:hidden  builtin page
+  // takin code:hidden  builtin page
   const { isCurrentWorkspaceOwner } = useAppContext()
  
 
@@ -33,7 +33,7 @@ const ProviderList = () => {
     defaultTab: 'builtin',
   })
   const options = [
-    //  {/* takin command:hidden  builtin page */}
+    //  {/* takin code:hidden  builtin page */}
     // { value: 'builtin', text: t('tools.type.builtIn') },
     { value: 'api', text: t('tools.type.custom') },
     { value: 'workflow', text: t('tools.type.workflow') },
@@ -136,7 +136,7 @@ const ProviderList = () => {
           {!filteredCollectionList.length && activeTab === 'builtin' && (
             <Empty lightCard text={t('tools.noTools')} className='px-12 h-[224px]' />
           )}
-          {/* takin command:hidden  builtin page */}
+          {/* takin code:hidden  builtin page */}
           {
             isCurrentWorkspaceOwner && enable_marketplace && activeTab === 'builtin' && (
               <Marketplace

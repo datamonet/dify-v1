@@ -150,7 +150,7 @@ class AppApi(Resource):
         if not current_user.is_editor:
             raise Forbidden()
 
-        # takin command: 删除关联的推荐记录
+        # takin code: 删除关联的推荐记录
         RecommendedAppService().delete_app(app_model.id)
         
         app_service = AppService()

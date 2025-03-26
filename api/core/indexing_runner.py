@@ -282,7 +282,7 @@ class IndexingRunner:
                     tenant_id=tenant_id,
                     model_type=ModelType.TEXT_EMBEDDING,
                 )
-    # ------------------------------- takin command:增加token扣费返回 -----------------------------
+    # ------------------------------- takin code:增加token扣费返回 -----------------------------
 
         total_price = 0
         currency = "USD"
@@ -364,7 +364,7 @@ class IndexingRunner:
             total_price = "{:f}".format(embedding_price_info.total_amount)
             currency = embedding_price_info.currency
         return IndexingEstimate(total_segments=total_segments, preview=preview_texts,total_price=total_price, currency=currency)  # type: ignore
-    # ------------------------------- takin command:end -----------------------------
+    # ------------------------------- takin code:end -----------------------------
     
     def _extract(
         self, index_processor: BaseIndexProcessor, dataset_document: DatasetDocument, process_rule: dict

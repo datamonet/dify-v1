@@ -11,7 +11,7 @@ const translation = {
     descWrite: '瞭解如何編寫更好的知識庫描述。',
     permissions: '可見許可權',
     permissionsOnlyMe: '只有我',
-      // takin command:change this i18n
+      // takin code:change this i18n
     permissionsAllMember: '所有人',
     indexMethod: '索引模式',
     indexMethodHighQuality: '高質量',

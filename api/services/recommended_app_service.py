@@ -12,7 +12,7 @@ from services.recommend_app.recommend_app_factory import RecommendAppRetrievalFa
 class RecommendedAppService:
     @classmethod
     def get_paginate_recommended_apps(cls, language: str, args: dict) -> Pagination | None:
-        """takin command:Get paginate recommended apps.
+        """takin code:Get paginate recommended apps.
 
         Args:
             language (str): language
@@ -123,7 +123,7 @@ class RecommendedAppService:
         return result
 
 
-    # takin command:publish api,创建推荐应用
+    # takin code:publish api,创建推荐应用
     def create_app(self, args: dict) -> dict:
         # 检查App是否存在
         app_to_update = db.session.query(App).filter_by(id=args["app_id"]).first()
@@ -157,7 +157,7 @@ class RecommendedAppService:
         return {"id": app.id}
 
 
-    # takin command:publish api,删除推荐应用
+    # takin code:publish api,删除推荐应用
     def delete_app(self, id: str) -> None:
         """
         Delete recommended app

@@ -47,7 +47,7 @@ const ShareAppCard = ({
             {app.mode === 'agent-chat' && <div className='truncate'>{t('app.types.agent').toUpperCase()}</div>}
             {app.mode === 'workflow' && <div className='truncate'>{t('app.types.workflow').toUpperCase()}</div>}
             {app.mode === 'completion' && <div className='truncate'>{t('app.types.completion').toUpperCase()}</div>}
-            {/* takin command: 增加卡片的作者 */}
+            {/* takin code: 增加卡片的作者 */}
             {app.username && <span className="px-2">By {app.username}</span>}
          
           </div>

@@ -466,7 +466,7 @@ export const request = async<T>(url: string, options = {}, otherOptions?: IOther
     const errResp: Response = err as any
     if (errResp.status === 401) {
       const [parseErr, errRespData] = await asyncRunSafe<ResponseError>(errResp.json())
-        // takin command:
+        // takin code:
         const loginUrl = `${
           process.env.NEXT_PUBLIC_TAKIN_API_URL
         }/signin?callbackUrl=${encodeURIComponent(
@@ -503,7 +503,7 @@ export const request = async<T>(url: string, options = {}, otherOptions?: IOther
         Toast.notify({ type: 'error', message, duration: 4000 })
         return Promise.reject(err)
       }
-      // takin command:跳过
+      // takin code:跳过
       // if (code === 'not_init_validated' && IS_CE_EDITION) {
       //   globalThis.location.href = `${globalThis.location.origin}/init`
       //   return Promise.reject(err)

@@ -69,7 +69,7 @@ const AppDetailLayout: FC<IAppDetailLayoutProps> = (props) => {
         }]
         : []
       ),
-      // takin command:hidden apiAccess
+      // takin code:hidden apiAccess
       ...(isCurrentWorkspaceOwner
         ? [{
           name: t('common.appMenus.apiAccess'),
@@ -90,7 +90,7 @@ const AppDetailLayout: FC<IAppDetailLayoutProps> = (props) => {
         }]
         : []
       ),
-            // takin command:hidden apiAccess
+            // takin code:hidden apiAccess
       ...(isCurrentWorkspaceOwner
         ? [{
           name: t('common.appMenus.overview'),

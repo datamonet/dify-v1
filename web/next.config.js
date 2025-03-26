@@ -23,7 +23,7 @@ const nextConfig = {
   pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
   experimental: {
     serverActions: {
-      bodySizeLimit: '10mb', // takin command:Adjust this value as needed
+      bodySizeLimit: '10mb', // takin code:Adjust this value as needed
     },
   },
   // fix all before production. Now it slow the develop speed.

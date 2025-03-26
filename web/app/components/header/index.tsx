@@ -64,7 +64,7 @@ const Header = () => {
             <Link href={process.env.NEXT_PUBLIC_TAKIN_API_URL!} className='flex items-center mr-4'>
               <LogoSite className='object-contain' />
             </Link>
-            {/* takin command: hidden workspace */}
+            {/* takin code: hidden workspace */}
             {/* <div className='font-light text-divider-deep'>/</div>
             <div className='flex items-center gap-0.5'>
               <WorkspaceProvider>
