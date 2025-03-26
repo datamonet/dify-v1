@@ -3,23 +3,17 @@ import { useTranslation } from 'react-i18next'
 import { Fragment, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useContext, useContextSelector } from 'use-context-selector'
-import { RiAccountCircleLine, RiArrowDownSLine, RiArrowRightUpLine, RiBookOpenLine, RiGithubLine, RiInformation2Line, RiLogoutBoxRLine, RiMap2Line, RiSettings3Line, RiStarLine } from '@remixicon/react'
+import { RiAccountCircleLine, RiArrowDownSLine, RiArrowRightUpLine, RiLogoutBoxRLine, RiSettings3Line } from '@remixicon/react'
 import Link from 'next/link'
 import { Menu, Transition } from '@headlessui/react'
-import Indicator from '../indicator'
 import AccountAbout from '../account-about'
-import GithubStar from '../github-star'
-import Support from './support'
-import Compliance from './compliance'
 import classNames from '@/utils/classnames'
 import I18n from '@/context/i18n'
 import Avatar from '@/app/components/base/avatar'
 import { logout } from '@/service/common'
 import AppContext, { useAppContext } from '@/context/app-context'
 import { useModalContext } from '@/context/modal-context'
-import { LanguagesSupported } from '@/i18n/language'
-import { LicenseStatus } from '@/types/feature'
-import { IS_CLOUD_EDITION } from '@/config'
+import { deleteCookie } from '@/app/api/user'
 
 export type IAppSelector = {
   isMobile: boolean
@@ -43,6 +37,8 @@ export default function AppSelector({ isMobile }: IAppSelector) {
 
   // takin command: 退出登录
   const handleLogout = async () => {
+    await deleteCookie('__Secure-next-auth.session-token')
+
     await logout({
       url: '/logout',
       params: {},
@@ -102,7 +98,7 @@ export default function AppSelector({ isMobile }: IAppSelector) {
                     </div>
                   </Menu.Item>
                   <div className="px-1 py-1">
-                     {/* takin command：隐藏工作空间 */}
+                    {/* takin command：隐藏工作空间 */}
                     <Menu.Item>
                       {({ active }) => <Link
                         className={classNames(itemClassName, 'group',
@@ -187,7 +183,7 @@ export default function AppSelector({ isMobile }: IAppSelector) {
                       )
                     }
                   </div> */}
-                
+
                   <Menu.Item>
                     {({ active }) => <div className='p-1' onClick={() => handleLogout()}>
                       <div
