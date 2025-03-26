@@ -74,8 +74,7 @@ class ToolFileManager:
             has_extension = len(filename.split(".")) > 1
             # Add extension flexibly
             present_filename = filename if has_extension else f"{filename}{extension}"
-          # takin command:change s3 storage path
-        filepath = f"dify/tools/{tenant_id}/{unique_filename}"
+        filepath = f"tools/{tenant_id}/{unique_filename}"
         storage.save(filepath, file_binary)
 
         tool_file = ToolFile(
@@ -113,8 +112,7 @@ class ToolFileManager:
         extension = guess_extension(mimetype) or ".bin"
         unique_name = uuid4().hex
         filename = f"{unique_name}{extension}"
-        # takin command:change s3 storage path
-        filepath = f"dify/tools/{tenant_id}/{filename}"
+        filepath = f"tools/{tenant_id}/{filename}"
         storage.save(filepath, blob)
 
         tool_file = ToolFile(
