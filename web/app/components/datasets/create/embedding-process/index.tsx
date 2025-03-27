@@ -32,7 +32,6 @@ import { RETRIEVE_METHOD } from '@/types/app'
 import Tooltip from '@/app/components/base/tooltip'
 import { useInvalidDocumentList } from '@/service/knowledge/use-document'
 
-import { updateCreditsByKnowledge } from '@/app/api/pricing'
 import AppContext from '@/context/app-context'
 import { useContext } from 'use-context-selector'
 
@@ -159,6 +158,7 @@ const EmbeddingProcess: FC<Props> = ({ datasetId, batchId, documents = [], index
   const getFirstDocument = documents[0]
 
   const [indexingStatusBatchDetail, setIndexingStatusDetail] = useState<IndexingStatusResponse[]>([])
+  
   const fetchIndexingStatus = async () => {
     const status = await doFetchIndexingStatus({ datasetId, batchId })
     setIndexingStatusDetail(status.data)
@@ -183,31 +183,26 @@ const EmbeddingProcess: FC<Props> = ({ datasetId, batchId, documents = [], index
       const isCompleted = indexingStatusBatchDetail.every(indexingStatusDetail => ['completed', 'error', 'paused'].includes(indexingStatusDetail.indexing_status))
       
       if (isCompleted) {
-        // takin code:处理完成文档的价格扣费，传递knowledgeInfo，避免重复扣费
+        // takin code:更新用户积分
         const completedDocs = indexingStatusBatchDetail.filter(doc => 
-          doc.indexing_status === 'completed' && doc.total_price && doc.total_price > 0
+          doc.indexing_status === 'completed' && doc.total_credits && doc.total_credits > 0
         )
         
         if (completedDocs.length > 0) {
-          const totalPrice = completedDocs.reduce((sum, doc) => 
-            sum + (doc.total_price || 0), 0
+          const totalCredits = completedDocs.reduce((sum, doc) => 
+            sum + (doc.total_credits || 0), 0
           )
-          if (totalPrice > 0) {
+          if (totalCredits > 0) {
             try {
               // 更新积分
-              const totalCreditCost = await updateCreditsByKnowledge({
-                usage: totalPrice,
-                reason: 'Dify Documents',
-                knowledgeInfo: { datasetId, batchId },
-              })
-              const newCredits = parseFloat(((userProfile?.credits || 0) - totalCreditCost).toFixed(2))
+              const newCredits = parseFloat(((userProfile?.credits || 0) - totalCredits).toFixed(2))
               updateCreditsWithoutRerender(newCredits)
             } catch (err) {
               console.error('Failed to deduct credits:', err)
             }
           }
         }
-        
+        // takin code:---end---
         stopQueryStatus()
         return
       }

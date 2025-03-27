@@ -25,7 +25,6 @@ import {
   resumeDocIndexing,
 } from '@/service/datasets'
 
-import { updateCreditsByKnowledge } from '@/app/api/pricing'
 import AppContext from '@/context/app-context'
 
 type IEmbeddingDetailProps = {
@@ -188,20 +187,16 @@ const EmbeddingDetail: FC<IEmbeddingDetailProps> = ({
     try {
       const indexingStatusDetail = await fetchIndexingStatus()
       if (['completed', 'error', 'paused'].includes(indexingStatusDetail?.indexing_status)) {
-        // takin code:处理完成文档的价格扣费，传递knowledgeInfo，避免重复扣费
-        if (indexingStatusDetail?.indexing_status === 'completed' && indexingStatusDetail?.total_price > 0) {
+        // takin code:更新用户积分
+        if (indexingStatusDetail?.indexing_status === 'completed' && indexingStatusDetail?.total_credits > 0) {
           try {
-            const totalCreditCost = await updateCreditsByKnowledge({
-              usage: indexingStatusDetail.total_price,
-              reason: 'Dify Documents',
-              knowledgeInfo: { dataset_id: localDatasetId, document_id: localDocumentId },
-            })
-            const newCredits = parseFloat(((userProfile?.credits || 0) - totalCreditCost).toFixed(2))
+            const newCredits = parseFloat(((userProfile?.credits || 0) - indexingStatusDetail?.total_credits).toFixed(2))
             updateCreditsWithoutRerender(newCredits)
           } catch (err) {
             console.error('Failed to deduct credits:', err)
           }
         }
+        // takin code:---end---
         
         stopQueryStatus()
         detailUpdate()

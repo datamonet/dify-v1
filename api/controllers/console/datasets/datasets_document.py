@@ -8,6 +8,9 @@ from flask_login import current_user  # type: ignore
 from flask_restful import Resource, fields, marshal, marshal_with, reqparse  # type: ignore
 from sqlalchemy import asc, desc
 from werkzeug.exceptions import Forbidden, NotFound
+import os
+import requests
+from flask import current_app
 
 import services
 from controllers.console import api
@@ -38,7 +41,7 @@ from core.errors.error import (
 )
 from core.indexing_runner import IndexingRunner
 from core.model_manager import ModelManager
-from core.model_runtime.entities.model_entities import ModelType
+from core.model_runtime.entities.model_entities import ModelType, PriceType
 from core.model_runtime.errors.invoke import InvokeAuthorizationError
 from core.plugin.manager.exc import PluginDaemonClientSideError
 from core.rag.extractor.entity.extract_setting import ExtractSetting
@@ -569,11 +572,11 @@ class DocumentBatchIndexingStatusApi(DocumentResource):
     @login_required
     @account_initialization_required
     def get(self, dataset_id, batch):
+        auth_header = request.headers.get("Authorization")
         dataset_id = str(dataset_id)
         batch = str(batch)
         documents = self.get_batch_documents(dataset_id, batch)
         documents_status = []
-        
         # takin code:Get the embedding model instance
         model_manager = ModelManager()
         embedding_model_instance = None
@@ -611,6 +614,24 @@ class DocumentBatchIndexingStatusApi(DocumentResource):
                     document.total_price = float(embedding_price_info.total_amount)
                     document.currency = embedding_price_info.currency
                     
+                    # Send pricing information to external API
+                    try:
+                        requests.post(
+                            f"{os.getenv('TAKIN_API_URL')}/api/external/dify/pricing/knowledge",
+                            json={
+                                "usage": document.total_price,
+                                "knowledgeInfo": {
+                                    "datasetId": dataset_id,
+                                    "batchId": batch
+                                }
+                            },
+                            headers={
+                                "Authorization": auth_header
+                            }
+                        )
+                    except Exception as e:
+                        current_app.logger.error(f"Failed to send pricing info to external API: {str(e)}")
+                    
             documents_status.append(marshal(document, document_status_fields))
         data = {"data": documents_status}
         return data
@@ -621,6 +642,7 @@ class DocumentIndexingStatusApi(DocumentResource):
     @login_required
     @account_initialization_required
     def get(self, dataset_id, document_id):
+        auth_header = request.headers.get("Authorization")
         dataset_id = str(dataset_id)
         document_id = str(document_id)
         document = self.get_document(dataset_id, document_id)
@@ -656,6 +678,25 @@ class DocumentIndexingStatusApi(DocumentResource):
                     tokens=document.tokens,
                 )
                 document.total_price = float(embedding_price_info.total_amount)
+                document.currency = embedding_price_info.currency
+
+                # Send pricing information to external API
+                try:
+                    requests.post(
+                        f"{os.getenv('TAKIN_API_URL')}/api/external/dify/pricing/knowledge",
+                        json={
+                            "usage": document.total_price,
+                            "knowledgeInfo": {
+                                "datasetId": dataset_id,
+                                "batchId": document_id
+                            }
+                        },
+                        headers={
+                            "Authorization": auth_header
+                        }
+                    )
+                except Exception as e:
+                    current_app.logger.error(f"Failed to send pricing info to external API: {str(e)}")
         
         return marshal(document, document_status_fields)
 

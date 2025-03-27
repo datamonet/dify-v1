@@ -206,7 +206,7 @@ export type IndexingStatusResponse = {
   stopped_at: any
   completed_segments: number
   total_segments: number
-  total_price: number // takin code:add total_price
+  total_credits: number // takin code:后端扣费之后返回消耗的积分，add total_credits
 }
 export type IndexingStatusBatchResponse = {
   data: IndexingStatusResponse[]
