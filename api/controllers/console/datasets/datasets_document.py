@@ -8,9 +8,6 @@ from flask_login import current_user  # type: ignore
 from flask_restful import Resource, fields, marshal, marshal_with, reqparse  # type: ignore
 from sqlalchemy import asc, desc
 from werkzeug.exceptions import Forbidden, NotFound
-import os
-import requests
-from flask import current_app
 
 import services
 from controllers.console import api
@@ -41,7 +38,7 @@ from core.errors.error import (
 )
 from core.indexing_runner import IndexingRunner
 from core.model_manager import ModelManager
-from core.model_runtime.entities.model_entities import ModelType, PriceType
+from core.model_runtime.entities.model_entities import ModelType
 from core.model_runtime.errors.invoke import InvokeAuthorizationError
 from core.plugin.manager.exc import PluginDaemonClientSideError
 from core.rag.extractor.entity.extract_setting import ExtractSetting
@@ -60,17 +57,6 @@ from services.entities.knowledge_entities.knowledge_entities import KnowledgeCon
 from tasks.add_document_to_index_task import add_document_to_index_task
 from tasks.remove_document_from_index_task import remove_document_from_index_task
 
-
-from core.model_manager import ModelManager
-from core.model_runtime.entities.model_entities import ModelType, PriceType
-from core.model_runtime.model_providers.__base.large_language_model import (
-    LargeLanguageModel,
-)
-from core.model_runtime.model_providers.__base.text_embedding_model import (
-    TextEmbeddingModel,
-)
-
-from typing import cast
 
 class DocumentResource(Resource):
     def get_document(self, dataset_id: str, document_id: str) -> Document:
@@ -572,15 +558,10 @@ class DocumentBatchIndexingStatusApi(DocumentResource):
     @login_required
     @account_initialization_required
     def get(self, dataset_id, batch):
-        auth_header = request.headers.get("Authorization")
         dataset_id = str(dataset_id)
         batch = str(batch)
         documents = self.get_batch_documents(dataset_id, batch)
         documents_status = []
-        # takin code:Get the embedding model instance
-        model_manager = ModelManager()
-        embedding_model_instance = None
-        
         for document in documents:
             completed_segments = DocumentSegment.query.filter(
                 DocumentSegment.completed_at.isnot(None),
@@ -594,44 +575,6 @@ class DocumentBatchIndexingStatusApi(DocumentResource):
             document.total_segments = total_segments
             if document.is_paused:
                 document.indexing_status = "paused"
-                
-            # # takin code:处理完成文档的价格扣费，传递knowledgeInfo，避免重复扣费,Calculate price when document is completed
-            if document.indexing_status == "completed" and document.tokens:
-                if not embedding_model_instance:
-                    embedding_model_instance = model_manager.get_default_model_instance(
-                        tenant_id=document.tenant_id,
-                        model_type=ModelType.TEXT_EMBEDDING
-                    )
-                
-                if embedding_model_instance:
-                    embedding_model_type_instance = cast(TextEmbeddingModel, embedding_model_instance.model_type_instance)
-                    embedding_price_info = embedding_model_type_instance.get_price(
-                        model=embedding_model_instance.model,
-                        credentials=embedding_model_instance.credentials,
-                        price_type=PriceType.INPUT,
-                        tokens=document.tokens,
-                    )
-                    document.total_price = float(embedding_price_info.total_amount)
-                    document.currency = embedding_price_info.currency
-                    
-                    # Send pricing information to external API
-                    try:
-                        requests.post(
-                            f"{os.getenv('TAKIN_API_URL')}/api/external/dify/pricing/knowledge",
-                            json={
-                                "usage": document.total_price,
-                                "knowledgeInfo": {
-                                    "datasetId": dataset_id,
-                                    "batchId": batch
-                                }
-                            },
-                            headers={
-                                "Authorization": auth_header
-                            }
-                        )
-                    except Exception as e:
-                        current_app.logger.error(f"Failed to send pricing info to external API: {str(e)}")
-                    
             documents_status.append(marshal(document, document_status_fields))
         data = {"data": documents_status}
         return data
@@ -642,7 +585,6 @@ class DocumentIndexingStatusApi(DocumentResource):
     @login_required
     @account_initialization_required
     def get(self, dataset_id, document_id):
-        auth_header = request.headers.get("Authorization")
         dataset_id = str(dataset_id)
         document_id = str(document_id)
         document = self.get_document(dataset_id, document_id)
@@ -660,44 +602,6 @@ class DocumentIndexingStatusApi(DocumentResource):
         document.total_segments = total_segments
         if document.is_paused:
             document.indexing_status = "paused"
-        
-        # takin code:处理完成文档的价格扣费，传递knowledgeInfo，避免重复扣费,Calculate price when document is completed
-        if document.indexing_status == "completed" and document.tokens:
-            model_manager = ModelManager()
-            embedding_model_instance = model_manager.get_default_model_instance(
-                tenant_id=document.tenant_id,
-                model_type=ModelType.TEXT_EMBEDDING
-            )
-            
-            if embedding_model_instance:
-                embedding_model_type_instance = cast(TextEmbeddingModel, embedding_model_instance.model_type_instance)
-                embedding_price_info = embedding_model_type_instance.get_price(
-                    model=embedding_model_instance.model,
-                    credentials=embedding_model_instance.credentials,
-                    price_type=PriceType.INPUT,
-                    tokens=document.tokens,
-                )
-                document.total_price = float(embedding_price_info.total_amount)
-                document.currency = embedding_price_info.currency
-
-                # Send pricing information to external API
-                try:
-                    requests.post(
-                        f"{os.getenv('TAKIN_API_URL')}/api/external/dify/pricing/knowledge",
-                        json={
-                            "usage": document.total_price,
-                            "knowledgeInfo": {
-                                "datasetId": dataset_id,
-                                "batchId": document_id
-                            }
-                        },
-                        headers={
-                            "Authorization": auth_header
-                        }
-                    )
-                except Exception as e:
-                    current_app.logger.error(f"Failed to send pricing info to external API: {str(e)}")
-        
         return marshal(document, document_status_fields)
 
 
