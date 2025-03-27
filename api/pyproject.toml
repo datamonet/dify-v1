@@ -68,7 +68,7 @@ readabilipy = "0.2.0"
 redis = { version = "~5.0.3", extras = ["hiredis"] }
 resend = "~0.7.0"
 sentry-sdk = { version = "~1.44.1", extras = ["flask"] }
-sqlalchemy = "~2.0.29"
+sqlalchemy = "~2.0.33"
 starlette = "0.41.0"
 tiktoken = "~0.8.0"
 tokenizers = "~0.15.0"
