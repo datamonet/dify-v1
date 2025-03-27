@@ -574,9 +574,7 @@ class DocumentBatchIndexingStatusApi(DocumentResource):
         documents = self.get_batch_documents(dataset_id, batch)
         documents_status = []
         
-        # # takin code:Get the embedding model instance
-        
-        
+        # takin code:Get the embedding model instance
         model_manager = ModelManager()
         embedding_model_instance = None
         
@@ -594,7 +592,7 @@ class DocumentBatchIndexingStatusApi(DocumentResource):
             if document.is_paused:
                 document.indexing_status = "paused"
                 
-            # # takin code:Calculate price when document is completed
+            # # takin code:处理完成文档的价格扣费，传递knowledgeInfo，避免重复扣费,Calculate price when document is completed
             if document.indexing_status == "completed" and document.tokens:
                 if not embedding_model_instance:
                     embedding_model_instance = model_manager.get_default_model_instance(
@@ -641,7 +639,7 @@ class DocumentIndexingStatusApi(DocumentResource):
         if document.is_paused:
             document.indexing_status = "paused"
         
-        # takin code:Calculate price when document is completed
+        # takin code:处理完成文档的价格扣费，传递knowledgeInfo，避免重复扣费,Calculate price when document is completed
         if document.indexing_status == "completed" and document.tokens:
             model_manager = ModelManager()
             embedding_model_instance = model_manager.get_default_model_instance(
