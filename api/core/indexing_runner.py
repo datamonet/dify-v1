@@ -631,6 +631,8 @@ class IndexingRunner:
 
        
 
+ 
+    @staticmethod
     def _process_keyword_index(flask_app, dataset_id, document_id, documents):
         with flask_app.app_context():
             dataset = Dataset.query.filter_by(id=dataset_id).first()
