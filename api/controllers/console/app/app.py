@@ -26,7 +26,6 @@ from libs.login import login_required
 from models import Account, App
 from services.app_dsl_service import AppDslService, ImportMode
 from services.app_service import AppService
-
 from services.recommended_app_service import RecommendedAppService
 
 ALLOW_CREATE_APP_MODES = ["chat", "agent-chat", "advanced-chat", "workflow", "completion"]
