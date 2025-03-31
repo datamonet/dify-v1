@@ -6,7 +6,7 @@ import LogoSite from '@/app/components/base/logo/logo-site'
 
 const AppList = () => {
   return (
-    <div className='relative flex flex-col overflow-y-auto bg-background-body shrink-0 h-0 grow'>
+    <div className='relative flex h-0 shrink-0 grow flex-col overflow-y-auto bg-background-body'>
       <Apps />
       {/* takin code: 去掉加入社区，修改成Powered by */}
       {/* {systemFeatures.license.status === LicenseStatus.NONE && <footer className='px-12 py-6 grow-0 shrink-0'>
@@ -14,10 +14,10 @@ const AppList = () => {
         <p className='mt-1 system-sm-regular text-text-tertiary'>{t('app.communityIntro')}</p>
         <div className='flex items-center gap-2 mt-3'>
           <Link className={style.socialMediaLink} target='_blank' rel='noopener noreferrer' href='https://github.com/langgenius/dify'>
-            <RiGithubFill className='w-5 h-5 text-text-tertiary' />
+            <RiGithubFill className='h-5 w-5 text-text-tertiary' />
           </Link>
           <Link className={style.socialMediaLink} target='_blank' rel='noopener noreferrer' href='https://discord.gg/FngNHpbcY7'>
-            <RiDiscordFill className='w-5 h-5 text-text-tertiary' />
+            <RiDiscordFill className='h-5 w-5 text-text-tertiary' />
           </Link>
         </div>
       </footer>} */}
