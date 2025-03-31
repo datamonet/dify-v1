@@ -163,8 +163,8 @@ const AppPublisher = ({
     if (publishDisabled || published)
       return
     handlePublish()
-  }
-  , { exactMatch: true, useCapture: true })
+  },
+  { exactMatch: true, useCapture: true })
 
 
   const { mutate } = useSWR(
@@ -221,19 +221,19 @@ const AppPublisher = ({
             disabled={disabled}
           >
             {t('workflow.common.publish')}
-            <RiArrowDownSLine className='w-4 h-4 text-components-button-primary-text' />
+            <RiArrowDownSLine className='h-4 w-4 text-components-button-primary-text' />
           </Button>
         </PortalToFollowElemTrigger>
         <PortalToFollowElemContent className='z-[11]'>
-          <div className='w-[320px] bg-components-panel-bg rounded-2xl border-[0.5px] border-components-panel-border shadow-xl shadow-shadow-shadow-5'>
+          <div className='w-[320px] rounded-2xl border-[0.5px] border-components-panel-border bg-components-panel-bg shadow-xl shadow-shadow-shadow-5'>
             <div className='p-4 pt-3'>
-              <div className='flex items-center h-6 system-xs-medium-uppercase text-text-tertiary'>
+              <div className='system-xs-medium-uppercase flex h-6 items-center text-text-tertiary'>
                 {publishedAt ? t('workflow.common.latestPublished') : t('workflow.common.currentDraftUnpublished')}
               </div>
               {publishedAt
                 ? (
-                  <div className='flex justify-between items-center'>
-                    <div className='flex items-center system-sm-medium text-text-secondary'>
+                  <div className='flex items-center justify-between'>
+                    <div className='system-sm-medium flex items-center text-text-secondary'>
                       {t('workflow.common.publishedAt')} {formatTimeFromNow(publishedAt)}
                     </div>
                     {isChatApp && <Button
@@ -247,7 +247,7 @@ const AppPublisher = ({
                   </div>
                 )
                 : (
-                  <div className='flex items-center system-sm-medium text-text-secondary'>
+                  <div className='system-sm-medium flex items-center text-text-secondary'>
                     {t('workflow.common.autoSaved')} · {Boolean(draftUpdatedAt) && formatTimeFromNow(draftUpdatedAt!)}
                   </div>
                 )}
@@ -262,7 +262,7 @@ const AppPublisher = ({
                 : (
                   <Button
                     variant='primary'
-                    className='w-full mt-3'
+                    className='mt-3 w-full'
                     onClick={() => handlePublish()}
                     disabled={publishDisabled || published}
                   >
@@ -276,7 +276,7 @@ const AppPublisher = ({
                             {/* <span>{t('workflow.common.publishUpdate')}</span> */}
                             {/* <div className='flex gap-0.5'>
                               {PUBLISH_SHORTCUT.map(key => (
-                                <span key={key} className='w-4 h-4 text-text-primary-on-surface system-kbd rounded-[4px] bg-components-kbd-bg-white'>
+                                <span key={key} className='system-kbd h-4 w-4 rounded-[4px] bg-components-kbd-bg-white text-text-primary-on-surface'>
                                   {key}
                                 </span>
                               ))}

@@ -43,7 +43,7 @@ const Avatar = ({
       style={style}
     >
       <div
-        className={cn(textClassName, 'text-center text-white scale-[0.4]')}
+        className={cn(textClassName, 'scale-[0.4] text-center text-white')}
         style={style}
       >
         {/* takin code: 错误是 Cannot read properties of undefined (reading 'toLocaleUpperCase')。这表明 name 参数在某些情况下可能是 undefined。 */}

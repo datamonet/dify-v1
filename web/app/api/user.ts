@@ -60,10 +60,10 @@ export async function deleteCookie() {
     expires: new Date(0),
     secure: isProduction,
     httpOnly: true,
-  }
-  cookies().set(tokenName, '', cookieOptions)
+  };
+  (await cookies()).set(tokenName, '', cookieOptions)
 }
 
 export async function getCookie() {
-  return cookies().get(tokenName)?.value
+  return (await cookies()).get(tokenName)?.value
 }
