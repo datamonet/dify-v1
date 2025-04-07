@@ -18,6 +18,9 @@ import { LanguagesSupported } from '@/i18n/language'
 import { IS_CE_EDITION } from '@/config'
 import { Theme } from '@/types/app'
 import useTheme from '@/hooks/use-theme'
+// takin code:add modal
+import AppContext from '@/context/app-context'
+import { useModalContext } from '@/context/modal-context'
 
 const FILES_NUMBER_LIMIT = 20
 
@@ -43,6 +46,8 @@ const FileUploader = ({
   const { t } = useTranslation()
   const { notify } = useContext(ToastContext)
   const { locale } = useContext(I18n)
+  const { userProfile } = useContext(AppContext)
+  const { setShowCreditsBillingModal } = useModalContext()
   const [dragging, setDragging] = useState(false)
   const dropRef = useRef<HTMLDivElement>(null)
   const dragRef = useRef<HTMLDivElement>(null)
@@ -93,6 +98,8 @@ const FileUploader = ({
   }
 
   const isValid = useCallback((file: File) => {
+    if ((userProfile.credits || 0) <= 0)
+      return setShowCreditsBillingModal(true)
     const { size } = file
     const ext = `.${getFileType(file)}`
     const isValidType = ACCEPTS.includes(ext.toLowerCase())

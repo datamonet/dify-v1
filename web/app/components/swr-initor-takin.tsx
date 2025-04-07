@@ -19,12 +19,6 @@ const SwrInitor = ({
   const pathname = usePathname()
   const [init, setInit] = useState(false)
 
-  console.log('[SwrInitor] Initial render:', {
-    pathname,
-    consoleTokenFromLocalStorage: consoleTokenFromLocalStorage ? '存在' : '不存在',
-    init,
-  })
-
   /**
    * takin code:获取takin cookie token;验证登录一般不会多过更改，直接copy一份，减少合并的冲突
    * ↓
@@ -38,23 +32,19 @@ const SwrInitor = ({
 
   useEffect(() => {
     const checkAuth = async () => {
-      console.log('[SwrInitor] 开始检查认证...')
       const token = await getCookie()
-      console.log('[SwrInitor] Cookie token:', token ? '存在' : '不存在')
 
       if (!token) {
-        console.log('[SwrInitor] 无 token，重定向到登录页面')
         router.replace(`${process.env.NEXT_PUBLIC_TAKIN_API_URL}/signin`)
         return
       }
 
       if (token === consoleTokenFromLocalStorage) {
-        console.log('[SwrInitor] token 匹配，设置 init = true')
         setInit(true)
         return
       }
 
-      console.log('[SwrInitor] token 不匹配，更新 localStorage 并重定向到 /apps')
+      localStorage?.setItem('console_token', token)
       localStorage?.setItem('console_token', token)
       setInit(true)
 
@@ -64,8 +54,6 @@ const SwrInitor = ({
 
     checkAuth()
   }, [router, pathname, searchParams, consoleTokenFromLocalStorage])
-
-  console.log('[SwrInitor] Render result:', init ? '显示内容' : '不显示内容')
 
   return init
     ? (

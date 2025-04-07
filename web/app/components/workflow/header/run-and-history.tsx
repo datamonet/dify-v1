@@ -20,7 +20,14 @@ import {
   StopCircle,
 } from '@/app/components/base/icons/src/vender/line/mediaAndDevices'
 
+// takin code:add modal
+import { useContext } from 'use-context-selector'
+import AppContext from '@/context/app-context'
+import { useModalContext } from '@/context/modal-context'
+
 const RunMode = memo(() => {
+  const { userProfile } = useContext(AppContext)
+  const { setShowCreditsBillingModal } = useModalContext()
   const { t } = useTranslation()
   const { handleWorkflowStartRunInWorkflow } = useWorkflowStartRun()
   const { handleStopRun } = useWorkflowRun()
@@ -36,6 +43,9 @@ const RunMode = memo(() => {
           isRunning && '!cursor-not-allowed bg-state-accent-hover',
         )}
         onClick={() => {
+          if ((userProfile.credits || 0) <= 0)
+            return setShowCreditsBillingModal(true)
+
           handleWorkflowStartRunInWorkflow()
         }}
       >

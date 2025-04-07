@@ -28,6 +28,11 @@ import FeatureBar from '@/app/components/base/features/new-feature-panel/feature
 import type { FileUpload } from '@/app/components/base/features/types'
 import { TransferMethod } from '@/types/app'
 
+// takin code:add modal
+import { useContext } from 'use-context-selector'
+import AppContext from '@/context/app-context'
+import { useModalContext } from '@/context/modal-context'
+
 type ChatInputAreaProps = {
   showFeatureBar?: boolean
   showFileUpload?: boolean
@@ -56,6 +61,8 @@ const ChatInputArea = ({
   isResponding,
   disabled,
 }: ChatInputAreaProps) => {
+  const { userProfile } = useContext(AppContext)
+  const { setShowCreditsBillingModal } = useModalContext()
   const { t } = useTranslation()
   const { notify } = useToastContext()
   const {
@@ -82,6 +89,9 @@ const ChatInputArea = ({
   const [currentIndex, setCurrentIndex] = useState(-1)
   const isComposingRef = useRef(false)
   const handleSend = () => {
+    if ((userProfile.credits || 0) <= 0)
+      return setShowCreditsBillingModal(true)
+
     if (isResponding) {
       notify({ type: 'info', message: t('appDebug.errorMessage.waitForResponse') })
       return
