@@ -31,8 +31,12 @@ def get_user(tenant_id: str, user_id: str | None) -> Account | EndUser:
                     session.add(user_model)
                     session.commit()
             else:
-                user_model = AccountService.load_user(user_id)
-                if not user_model:
+                # takin code:适配takin的查询 First try to get the account by ID to get the email
+                account = session.query(Account).filter(Account.id == user_id).first()
+                if account:
+                    user_model = AccountService.load_user(account.email)
+                else:
+                    # If not found in Account, try EndUser
                     user_model = session.query(EndUser).filter(EndUser.id == user_id).first()
                 if not user_model:
                     raise ValueError("user not found")
