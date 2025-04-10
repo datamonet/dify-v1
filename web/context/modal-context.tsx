@@ -17,7 +17,9 @@ import type {
   ModelLoadBalancingConfigEntry,
   ModelProvider,
 } from '@/app/components/header/account-setting/model-provider-page/declarations'
-
+import {
+  EDUCATION_VERIFYING_LOCALSTORAGE_ITEM,
+} from '@/app/education-apply/constants'
 import Pricing from '@/app/components/billing/pricing'
 import type { ModerationConfig, PromptVariable } from '@/models/debug'
 import type {
@@ -35,6 +37,9 @@ import type { UpdatePluginPayload } from '@/app/components/plugins/types'
 import UpdatePlugin from '@/app/components/plugins/update-plugin'
 // takin code：积分检查
 import CreditsBillingModal from '@/app/components/billing/credits-billing-modal'
+import { removeSpecificQueryParam } from '@/utils'
+import { noop } from 'lodash-es'
+
 export type ModalState<T> = {
   payload: T
   onCancelCallback?: () => void
@@ -125,6 +130,12 @@ export const ModalContextProvider = ({
   const [showPricingModal, setShowPricingModal] = useState(searchParams.get('show-pricing') === '1')
   const [showAnnotationFullModal, setShowAnnotationFullModal] = useState(false)
   const handleCancelAccountSettingModal = () => {
+    const educationVerifying = localStorage.getItem(EDUCATION_VERIFYING_LOCALSTORAGE_ITEM)
+
+    if (educationVerifying === 'yes')
+      localStorage.removeItem(EDUCATION_VERIFYING_LOCALSTORAGE_ITEM)
+
+    removeSpecificQueryParam('action')
     setShowAccountSettingModal(null)
     if (showAccountSettingModal?.onCancelCallback)
       showAccountSettingModal?.onCancelCallback()

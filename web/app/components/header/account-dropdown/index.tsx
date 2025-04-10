@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Fragment, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useContext, useContextSelector } from 'use-context-selector'
-import { RiAccountCircleLine, RiArrowDownSLine, RiArrowRightUpLine, RiLogoutBoxRLine, RiSettings3Line } from '@remixicon/react'
+import { RiAccountCircleLine, RiGraduationCapFill, RiArrowRightUpLine, RiLogoutBoxRLine, RiSettings3Line } from '@remixicon/react'
 import Link from 'next/link'
 import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react'
 import Indicator from '../indicator'
@@ -13,14 +13,13 @@ import I18n from '@/context/i18n'
 import Avatar from '@/app/components/base/avatar'
 import { logout } from '@/service/common'
 import AppContext, { useAppContext } from '@/context/app-context'
+import { useProviderContext } from '@/context/provider-context'
 import { useModalContext } from '@/context/modal-context'
 import { deleteCookie } from '@/app/api/user'
+import PremiumBadge from '@/app/components/base/premium-badge'
+import cn from '@/utils/classnames'
 
-export type IAppSelector = {
-  isMobile: boolean
-}
-
-export default function AppSelector({ isMobile }: IAppSelector) {
+export default function AppSelector() {
   const itemClassName = `
     flex items-center w-full h-9 pl-3 pr-2 text-text-secondary system-md-regular
     rounded-lg hover:bg-state-base-hover cursor-pointer gap-1
@@ -34,6 +33,7 @@ export default function AppSelector({ isMobile }: IAppSelector) {
   const { locale } = useContext(I18n)
   const { t } = useTranslation()
   const { userProfile, langeniusVersionInfo, isCurrentWorkspaceOwner } = useAppContext()
+  const { isEducationAccount } = useProviderContext()
   const { setShowAccountSettingModal } = useModalContext()
 
   // takin code: 退出登录
@@ -58,20 +58,8 @@ export default function AppSelector({ isMobile }: IAppSelector) {
         {
           ({ open }) => (
             <>
-              <MenuButton
-                className={`
-                    inline-flex items-center
-                    rounded-[20px] py-1 pl-1 pr-2.5 text-sm
-                  text-text-secondary hover:bg-state-base-hover
-                    mobile:px-1
-                    ${open && 'bg-state-base-hover'}
-                  `}
-              >
-                <Avatar avatar={userProfile.avatar_url} name={userProfile.name} className='mr-0 sm:mr-2' size={32} />
-                {!isMobile && <>
-                  {userProfile.name}
-                  <RiArrowDownSLine className="ml-1 h-3 w-3 text-text-tertiary" />
-                </>}
+              <MenuButton className={cn('inline-flex items-center rounded-[20px] p-0.5 hover:bg-background-default-dodge', open && 'bg-background-default-dodge')}>
+                <Avatar avatar={userProfile.avatar_url} name={userProfile.name} size={36} />
               </MenuButton>
               <Transition
                 as={Fragment}
@@ -92,7 +80,15 @@ export default function AppSelector({ isMobile }: IAppSelector) {
                   <MenuItem disabled>
                     <div className='flex flex-nowrap items-center py-[13px] pl-3 pr-2'>
                       <div className='grow'>
-                        <div className='system-md-medium break-all text-text-primary'>{userProfile.name}</div>
+                        <div className='system-md-medium break-all text-text-primary'>
+                          {userProfile.name}
+                          {isEducationAccount && (
+                            <PremiumBadge size='s' color='blue' className='ml-1 !px-2'>
+                              <RiGraduationCapFill className='mr-1 h-3 w-3' />
+                              <span className='system-2xs-medium'>EDU</span>
+                            </PremiumBadge>
+                          )}
+                        </div>
                         <div className='system-xs-regular break-all text-text-tertiary'>{userProfile.email}</div>
                       </div>
                       <Avatar avatar={userProfile.avatar_url} name={userProfile.name} size={36} className='mr-3' />
@@ -121,11 +117,10 @@ export default function AppSelector({ isMobile }: IAppSelector) {
                       </div>
                     </MenuItem>
                   </div>
-
                   <MenuItem>
                     <div className='p-1' onClick={() => handleLogout()}>
                       <div
-                        className={classNames(itemClassName, 'group justify-between',
+                        className={cn(itemClassName, 'group justify-between',
                           'data-[active]:bg-state-base-hover',
                         )}
                       >

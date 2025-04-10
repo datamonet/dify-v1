@@ -229,7 +229,7 @@ class WorkflowToolManageService:
         Delete a workflow tool.
         :param user_id: the user id
         :param tenant_id: the tenant id
-        :param workflow_app_id: the workflow app id
+        :param workflow_tool_id: the workflow tool id
         """
         db.session.query(WorkflowToolProvider).filter(
             WorkflowToolProvider.tenant_id == tenant_id, WorkflowToolProvider.id == workflow_tool_id
@@ -245,7 +245,7 @@ class WorkflowToolManageService:
         Get a workflow tool.
         :param user_id: the user id
         :param tenant_id: the tenant id
-        :param workflow_app_id: the workflow app id
+        :param workflow_tool_id: the workflow tool id
         :return: the tool
         """
         db_tool: WorkflowToolProvider | None = (
@@ -320,7 +320,7 @@ class WorkflowToolManageService:
         List workflow tool provider tools.
         :param user_id: the user id
         :param tenant_id: the tenant id
-        :param workflow_app_id: the workflow app id
+        :param workflow_tool_id: the workflow tool id
         :return: the list of tools
         """
         db_tool: WorkflowToolProvider | None = (

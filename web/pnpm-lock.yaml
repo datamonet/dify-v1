@@ -6023,6 +6023,7 @@ packages:
       debug: 4.4.0
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   /ahooks@3.8.4(react@19.0.0):
     resolution: {integrity: sha512-39wDEw2ZHvypaT14EpMMk4AzosHWt0z9bulY0BeDsvc9PqJEV+Kjh/4TZfftSsotBMq52iYIOFPd3PR56e0ZJg==}
@@ -10097,6 +10098,7 @@ packages:
       debug: 4.4.0
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   /human-signals@2.1.0:
     resolution: {integrity: sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==}

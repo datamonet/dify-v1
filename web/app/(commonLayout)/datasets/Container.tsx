@@ -38,12 +38,7 @@ const Container = () => {
   const { showExternalApiPanel, setShowExternalApiPanel } = useExternalApiPanel()
   const [includeAll, { toggle: toggleIncludeAll }] = useBoolean(false)
 
-  // const options = useMemo(() => {
-  //   return [
-  //     { value: 'dataset', text: t('dataset.datasets') },
-  //     ...(currentWorkspace.role === 'dataset_operator' ? [] : [{ value: 'api', text: t('dataset.datasetsApi') }]),
-  //   ]
-  // }, [currentWorkspace.role, t])
+  document.title = `${t('dataset.knowledge')} - Dify`
 
   const options = useMemo(() => {
     return [

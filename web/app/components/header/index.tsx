@@ -104,7 +104,7 @@ const Header = () => {
         )}
         {/* takin commadnd: 积分 */}
         <Credits />
-        <AccountDropdown isMobile={isMobile} />
+        <AccountDropdown />
       </div>
       {
         (isMobile && isShowNavMenu) && (

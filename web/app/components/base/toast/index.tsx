@@ -12,6 +12,7 @@ import {
 import { createContext, useContext } from 'use-context-selector'
 import ActionButton from '@/app/components/base/action-button'
 import classNames from '@/utils/classnames'
+import { noop } from 'lodash-es'
 
 export type IToastProps = {
   type?: 'success' | 'error' | 'warning' | 'info'
@@ -137,7 +138,7 @@ Toast.notify = ({
 
     root.render(
       <ToastContext.Provider value={{
-        notify: () => { },
+        notify: noop,
         close: () => {
           if (holder) {
             root.unmount()

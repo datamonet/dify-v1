@@ -37,6 +37,7 @@ import {
 // takin code:导入扣费模块
 import { useAppContext } from '@/context/app-context'
 import { updateCreditsByAgent } from '@/app/api/pricing'
+import { noop } from 'lodash-es'
 
 type GetAbortController = (abortController: AbortController) => void
 type SendCallback = {
@@ -311,7 +312,7 @@ export const useChat = (
       else
         ttsUrl = `/apps/${params.appId}/text-to-audio`
     }
-    const player = AudioPlayerManager.getInstance().getAudioPlayer(ttsUrl, ttsIsPublic, uuidV4(), 'none', 'none', (_: any): any => { })
+    const player = AudioPlayerManager.getInstance().getAudioPlayer(ttsUrl, ttsIsPublic, uuidV4(), 'none', 'none', noop)
     ssePost(
       url,
       {
