@@ -34,7 +34,8 @@ import { useProviderContext } from '@/context/provider-context'
 import { useInvalidateAllToolProviders } from '@/service/use-tools'
 import { API_PREFIX, MARKETPLACE_URL_PREFIX } from '@/config'
 import cn from '@/utils/classnames'
-
+// takin code: app context
+import { useAppContext } from '@/context/app-context'
 const i18nPrefix = 'plugin.action'
 
 type Props = {
@@ -48,6 +49,7 @@ const DetailHeader = ({
   onHide,
   onUpdate,
 }: Props) => {
+  const { isCurrentWorkspaceOwner } = useAppContext()
   const { t } = useTranslation()
   const locale = useGetLanguage()
   const { checkForUpdates, fetchReleases } = useGitHubReleases()
@@ -175,7 +177,8 @@ const DetailHeader = ({
           <div className="flex h-5 items-center">
             <Title title={label[locale]} />
             {verified && <RiVerifiedBadgeLine className="ml-0.5 h-4 w-4 shrink-0 text-text-accent" />}
-            <PluginVersionPicker
+            {/* takin code: isCurrentWorkspaceOwner can update tool */}
+            {isCurrentWorkspaceOwner && <PluginVersionPicker
               disabled={!isFromMarketplace}
               isShow={isShow}
               onShowChange={setIsShow}
@@ -202,7 +205,7 @@ const DetailHeader = ({
                   hasRedCornerMark={hasNewVersion}
                 />
               }
-            />
+            />}
             {(hasNewVersion || isFromGitHub) && (
               <Button variant='secondary-accent' size='small' className='!h-5' onClick={() => {
                 if (isFromMarketplace) {
