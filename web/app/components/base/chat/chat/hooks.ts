@@ -525,7 +525,7 @@ export const useChat = (
           responseItem.workflowProcess!.tracing!.push({
             ...iterationStartedData,
             status: WorkflowRunningStatus.Running,
-          } as any)
+          })
           updateCurrentQAOnTree({
             placeholderQuestionId,
             questionItem,
@@ -541,7 +541,7 @@ export const useChat = (
             ...tracing[iterationIndex],
             ...iterationFinishedData,
             status: WorkflowRunningStatus.Succeeded,
-          } as any
+          }
 
           updateCurrentQAOnTree({
             placeholderQuestionId,
@@ -560,7 +560,7 @@ export const useChat = (
           responseItem.workflowProcess!.tracing!.push({
             ...nodeStartedData,
             status: WorkflowRunningStatus.Running,
-          } as any)
+          })
           updateCurrentQAOnTree({
             placeholderQuestionId,
             questionItem,
@@ -603,7 +603,7 @@ export const useChat = (
           responseItem.workflowProcess!.tracing!.push({
             ...loopStartedData,
             status: WorkflowRunningStatus.Running,
-          } as any)
+          })
           updateCurrentQAOnTree({
             placeholderQuestionId,
             questionItem,
@@ -619,7 +619,7 @@ export const useChat = (
             ...tracing[loopIndex],
             ...loopFinishedData,
             status: WorkflowRunningStatus.Succeeded,
-          } as any
+          }
 
           updateCurrentQAOnTree({
             placeholderQuestionId,
