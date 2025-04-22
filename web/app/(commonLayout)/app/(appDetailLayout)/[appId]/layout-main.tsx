@@ -4,12 +4,8 @@ import { useUnmount } from 'ahooks'
 import React, { useCallback, useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import {
-  RiDashboard2Fill,
-  RiDashboard2Line,
   RiFileList3Fill,
   RiFileList3Line,
-  RiTerminalBoxFill,
-  RiTerminalBoxLine,
   RiTerminalWindowFill,
   RiTerminalWindowLine,
 } from '@remixicon/react'
@@ -69,12 +65,13 @@ const AppDetailLayout: FC<IAppDetailLayoutProps> = (props) => {
         }]
         : []
       ),
-      {
-        name: t('common.appMenus.apiAccess'),
-        href: `/app/${appId}/develop`,
-        icon: RiTerminalBoxLine,
-        selectedIcon: RiTerminalBoxFill,
-      },
+      // takin code: hidden API access
+      // {
+      //   name: t('common.appMenus.apiAccess'),
+      //   href: `/app/${appId}/develop`,
+      //   icon: RiTerminalBoxLine,
+      //   selectedIcon: RiTerminalBoxFill,
+      // },
       ...(isCurrentWorkspaceEditor
         ? [{
           name: mode !== 'workflow'
@@ -86,12 +83,13 @@ const AppDetailLayout: FC<IAppDetailLayoutProps> = (props) => {
         }]
         : []
       ),
-      {
-        name: t('common.appMenus.overview'),
-        href: `/app/${appId}/overview`,
-        icon: RiDashboard2Line,
-        selectedIcon: RiDashboard2Fill,
-      },
+      // takin code: hidden API access
+      // {
+      //   name: t('common.appMenus.overview'),
+      //   href: `/app/${appId}/overview`,
+      //   icon: RiDashboard2Line,
+      //   selectedIcon: RiDashboard2Fill,
+      // },
     ]
     return navs
   }, [])
