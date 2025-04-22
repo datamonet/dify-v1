@@ -283,8 +283,7 @@ export const Workflow: FC<WorkflowProps> = memo(({
         )
       }
       <LimitTips />
-      {/* takin code: takin code隐藏插件检查弹窗 */}
-      {/* {children} */}
+      {children}
       <ReactFlow
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
