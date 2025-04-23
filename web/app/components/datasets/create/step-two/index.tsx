@@ -110,15 +110,16 @@ type ParentChildConfig = {
   }
 }
 
+// takin code: change Parent-child default values
 const defaultParentChildConfig: ParentChildConfig = {
   chunkForContext: 'paragraph',
   parent: {
     delimiter: '\\n\\n',
-    maxLength: 1024,
+    maxLength: 500,
   },
   child: {
     delimiter: '\\n',
-    maxLength: 512,
+    maxLength: 200,
   },
 }
 
