@@ -51,9 +51,10 @@ class DatabaseRecommendAppRetrieval(RecommendAppRetrievalBase):
             if not app or not app.is_public:
                 continue
 
-            site = app.site
-            if not site:
-                continue
+            # Takin command:此处暂时隐藏
+            # site = app.site
+            # if not site:
+            #     continue
 
             recommended_app_result = {
                 "id": recommended_app.id,

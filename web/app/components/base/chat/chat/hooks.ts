@@ -34,6 +34,9 @@ import {
   getProcessedFiles,
   getProcessedFilesFromResponse,
 } from '@/app/components/base/file-uploader/utils'
+// takin code:导入扣费模块
+import { useAppContext } from '@/context/app-context'
+import { updateCreditsByAgent } from '@/app/api/pricing'
 import { noop } from 'lodash-es'
 
 type GetAbortController = (abortController: AbortController) => void
@@ -73,7 +76,7 @@ export const useChat = (
   const chatTreeRef = useRef<ChatItemInTree[]>(chatTree)
   const [targetMessageId, setTargetMessageId] = useState<string>()
   const threadMessages = useMemo(() => getThreadMessages(chatTree, targetMessageId), [chatTree, targetMessageId])
-
+  const { userProfile, updateCreditsWithoutRerender } = useAppContext()
   const getIntroduction = useCallback((str: string) => {
     return processOpeningStatement(str, formSettings?.inputs || {}, formSettings?.inputsForm || [])
   }, [formSettings?.inputs, formSettings?.inputsForm])
@@ -447,7 +450,7 @@ export const useChat = (
             parentId: data.parent_message_id,
           })
         },
-        onMessageEnd: (messageEnd) => {
+        onMessageEnd: async (messageEnd) => {
           if (messageEnd.metadata?.annotation_reply) {
             responseItem.id = messageEnd.id
             responseItem.annotation = ({
@@ -472,6 +475,16 @@ export const useChat = (
             responseItem,
             parentId: data.parent_message_id,
           })
+          // takin code:导入扣费模块。
+          const cost = await updateCreditsByAgent({
+            responseItem,
+            agentTools: config?.agent_mode?.tools || [],
+            agentUsage: messageEnd.metadata?.usage,
+            agentMod: isAgentMode ? 'Dify Agent' : 'Dify Chat',
+          })
+
+          const newCredits = parseFloat(((userProfile.credits || 0) - cost).toFixed(2))
+          updateCreditsWithoutRerender(newCredits)
         },
         onMessageReplace: (messageReplace) => {
           responseItem.content = messageReplace.answer

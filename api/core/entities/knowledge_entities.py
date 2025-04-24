@@ -17,3 +17,5 @@ class IndexingEstimate(BaseModel):
     total_segments: int
     preview: list[PreviewDetail]
     qa_preview: Optional[list[QAPreviewDetail]] = None
+    total_price: Optional[float] = None # takin code:增加token扣费返回
+    currency: Optional[str] = None # takin code:增加token扣费返回

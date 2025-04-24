@@ -4,7 +4,6 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useContext } from 'use-context-selector'
 import {
-  RiAlertFill,
   RiArrowLeftLine,
   RiSearchEyeLine,
 } from '@remixicon/react'
@@ -27,7 +26,6 @@ import s from './index.module.css'
 import unescape from './unescape'
 import escape from './escape'
 import { OptionCard } from './option-card'
-import LanguageSelect from './language-select'
 import { DelimiterInput, MaxLengthInput, OverlapInput } from './inputs'
 import cn from '@/utils/classnames'
 import type { CrawlOptions, CrawlResultItem, CreateDocumentReq, CustomFile, DocumentItem, FullDocumentDetail, ParentMode, PreProcessingRule, ProcessRule, Rules, createDocumentResponse } from '@/models/datasets'
@@ -53,12 +51,11 @@ import type { DefaultModel } from '@/app/components/header/account-setting/model
 import { ModelTypeEnum } from '@/app/components/header/account-setting/model-provider-page/declarations'
 import Checkbox from '@/app/components/base/checkbox'
 import RadioCard from '@/app/components/base/radio-card'
-import { FULL_DOC_PREVIEW_LENGTH, IS_CE_EDITION } from '@/config'
+import { FULL_DOC_PREVIEW_LENGTH } from '@/config'
 import Divider from '@/app/components/base/divider'
 import { getNotionInfo, getWebsiteInfo, useCreateDocument, useCreateFirstDocument, useFetchDefaultProcessRule, useFetchFileIndexingEstimateForFile, useFetchFileIndexingEstimateForNotion, useFetchFileIndexingEstimateForWeb } from '@/service/knowledge/use-create-dataset'
 import Badge from '@/app/components/base/badge'
 import { SkeletonContainer, SkeletonPoint, SkeletonRectangle, SkeletonRow } from '@/app/components/base/skeleton'
-import Tooltip from '@/app/components/base/tooltip'
 import CustomDialog from '@/app/components/base/dialog'
 import { PortalToFollowElem, PortalToFollowElemContent, PortalToFollowElemTrigger } from '@/app/components/base/portal-to-follow-elem'
 import { AlertTriangle } from '@/app/components/base/icons/src/vender/solid/alertsAndFeedback'
@@ -113,15 +110,16 @@ type ParentChildConfig = {
   }
 }
 
+// takin code: change Parent-child default values
 const defaultParentChildConfig: ParentChildConfig = {
   chunkForContext: 'paragraph',
   parent: {
     delimiter: '\\n\\n',
-    maxLength: 1024,
+    maxLength: 500,
   },
   child: {
     delimiter: '\\n',
-    maxLength: 512,
+    maxLength: 200,
   },
 }
 
@@ -652,7 +650,8 @@ const StepTwo = ({
                       <label className="system-sm-regular ml-2 cursor-pointer text-text-secondary">{getRuleName(rule.id)}</label>
                     </div>
                   ))}
-                  {IS_CE_EDITION && <>
+                  {/* takin code: hidden qa rule when doc form is not text */}
+                  {/* {IS_CE_EDITION && <>
                     <Divider type='horizontal' className='my-4 bg-divider-subtle' />
                     <div className='flex items-center py-0.5'>
                       <div className='flex items-center' onClick={() => {
@@ -691,7 +690,7 @@ const StepTwo = ({
                         </span>
                       </div>
                     )}
-                  </>}
+                  </>} */}
                 </div>
               </div>
             </div>

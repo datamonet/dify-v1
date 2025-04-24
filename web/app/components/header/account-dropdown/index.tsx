@@ -3,35 +3,20 @@ import { useTranslation } from 'react-i18next'
 import { Fragment, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useContext, useContextSelector } from 'use-context-selector'
-import {
-  RiAccountCircleLine,
-  RiArrowRightUpLine,
-  RiBookOpenLine,
-  RiGithubLine,
-  RiGraduationCapFill,
-  RiInformation2Line,
-  RiLogoutBoxRLine,
-  RiMap2Line,
-  RiSettings3Line,
-  RiStarLine,
-} from '@remixicon/react'
+import { RiAccountCircleLine, RiGraduationCapFill, RiArrowRightUpLine, RiLogoutBoxRLine, RiSettings3Line } from '@remixicon/react'
 import Link from 'next/link'
 import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react'
 import Indicator from '../indicator'
 import AccountAbout from '../account-about'
-import GithubStar from '../github-star'
-import Support from './support'
-import Compliance from './compliance'
-import PremiumBadge from '@/app/components/base/premium-badge'
+import classNames from '@/utils/classnames'
 import I18n from '@/context/i18n'
 import Avatar from '@/app/components/base/avatar'
 import { logout } from '@/service/common'
 import AppContext, { useAppContext } from '@/context/app-context'
 import { useProviderContext } from '@/context/provider-context'
 import { useModalContext } from '@/context/modal-context'
-import { LanguagesSupported } from '@/i18n/language'
-import { LicenseStatus } from '@/types/feature'
-import { IS_CLOUD_EDITION } from '@/config'
+import { deleteCookie } from '@/app/api/user'
+import PremiumBadge from '@/app/components/base/premium-badge'
 import cn from '@/utils/classnames'
 
 export default function AppSelector() {
@@ -41,6 +26,8 @@ export default function AppSelector() {
   `
   const router = useRouter()
   const [aboutVisible, setAboutVisible] = useState(false)
+  // takin command：在外部增加切换语言的弹窗
+  const [showModal, setShowModal] = useState(false)
   const systemFeatures = useContextSelector(AppContext, v => v.systemFeatures)
 
   const { locale } = useContext(I18n)
@@ -49,7 +36,10 @@ export default function AppSelector() {
   const { isEducationAccount } = useProviderContext()
   const { setShowAccountSettingModal } = useModalContext()
 
+  // takin code: 退出登录
   const handleLogout = async () => {
+    await deleteCookie()
+
     await logout({
       url: '/logout',
       params: {},
@@ -59,7 +49,7 @@ export default function AppSelector() {
     localStorage.removeItem('console_token')
     localStorage.removeItem('refresh_token')
 
-    router.push('/signin')
+    router.push(`${process.env.NEXT_PUBLIC_TAKIN_API_URL}/signin?callbackUrl=${encodeURIComponent(process.env.NEXT_PUBLIC_CALLBACK_URL || '')}`)
   }
 
   return (
@@ -105,12 +95,13 @@ export default function AppSelector() {
                     </div>
                   </MenuItem>
                   <div className="px-1 py-1">
+                    {/* takin code：隐藏工作空间 */}
                     <MenuItem>
-                      <Link
-                        className={cn(itemClassName, 'group',
+                    <Link
+                        className={classNames(itemClassName, 'group',
                           'data-[active]:bg-state-base-hover',
                         )}
-                        href='/account'
+                        href={`${process.env.NEXT_PUBLIC_TAKIN_API_URL}/settings`}
                         target='_self' rel='noopener noreferrer'>
                         <RiAccountCircleLine className='size-4 shrink-0 text-text-tertiary' />
                         <div className='system-md-regular grow px-1 text-text-secondary'>{t('common.account.account')}</div>
@@ -118,76 +109,13 @@ export default function AppSelector() {
                       </Link>
                     </MenuItem>
                     <MenuItem>
-                      <div className={cn(itemClassName,
+                    <div className={classNames(itemClassName,
                         'data-[active]:bg-state-base-hover',
                       )} onClick={() => setShowAccountSettingModal({ payload: 'members' })}>
                         <RiSettings3Line className='size-4 shrink-0 text-text-tertiary' />
                         <div className='system-md-regular grow px-1 text-text-secondary'>{t('common.userProfile.settings')}</div>
                       </div>
                     </MenuItem>
-                  </div>
-                  <div className='p-1'>
-                    <MenuItem>
-                      <Link
-                        className={cn(itemClassName, 'group justify-between',
-                          'data-[active]:bg-state-base-hover',
-                        )}
-                        href={
-                          locale !== LanguagesSupported[1] ? 'https://docs.dify.ai/' : `https://docs.dify.ai/v/${locale.toLowerCase()}/`
-                        }
-                        target='_blank' rel='noopener noreferrer'>
-                        <RiBookOpenLine className='size-4 shrink-0 text-text-tertiary' />
-                        <div className='system-md-regular grow px-1 text-text-secondary'>{t('common.userProfile.helpCenter')}</div>
-                        <RiArrowRightUpLine className='size-[14px] shrink-0 text-text-tertiary' />
-                      </Link>
-                    </MenuItem>
-                    <Support />
-                    {IS_CLOUD_EDITION && isCurrentWorkspaceOwner && <Compliance />}
-                  </div>
-                  <div className='p-1'>
-                    <MenuItem>
-                      <Link
-                        className={cn(itemClassName, 'group justify-between',
-                          'data-[active]:bg-state-base-hover',
-                        )}
-                        href='https://roadmap.dify.ai'
-                        target='_blank' rel='noopener noreferrer'>
-                        <RiMap2Line className='size-4 shrink-0 text-text-tertiary' />
-                        <div className='system-md-regular grow px-1 text-text-secondary'>{t('common.userProfile.roadmap')}</div>
-                        <RiArrowRightUpLine className='size-[14px] shrink-0 text-text-tertiary' />
-                      </Link>
-                    </MenuItem>
-                    {systemFeatures.license.status === LicenseStatus.NONE && <MenuItem>
-                      <Link
-                        className={cn(itemClassName, 'group justify-between',
-                          'data-[active]:bg-state-base-hover',
-                        )}
-                        href='https://github.com/langgenius/dify'
-                        target='_blank' rel='noopener noreferrer'>
-                        <RiGithubLine className='size-4 shrink-0 text-text-tertiary' />
-                        <div className='system-md-regular grow px-1 text-text-secondary'>{t('common.userProfile.github')}</div>
-                        <div className='flex items-center gap-0.5 rounded-[5px] border border-divider-deep bg-components-badge-bg-dimm px-[5px] py-[3px]'>
-                          <RiStarLine className='size-3 shrink-0 text-text-tertiary' />
-                          <GithubStar className='system-2xs-medium-uppercase text-text-tertiary' />
-                        </div>
-                      </Link>
-                    </MenuItem>}
-                    {
-                      document?.body?.getAttribute('data-public-site-about') !== 'hide' && (
-                        <MenuItem>
-                          <div className={cn(itemClassName, 'justify-between',
-                            'data-[active]:bg-state-base-hover',
-                          )} onClick={() => setAboutVisible(true)}>
-                            <RiInformation2Line className='size-4 shrink-0 text-text-tertiary' />
-                            <div className='system-md-regular grow px-1 text-text-secondary'>{t('common.userProfile.about')}</div>
-                            <div className='flex shrink-0 items-center'>
-                              <div className='system-xs-regular mr-2 text-text-tertiary'>{langeniusVersionInfo.current_version}</div>
-                              <Indicator color={langeniusVersionInfo.current_version === langeniusVersionInfo.latest_version ? 'green' : 'orange'} />
-                            </div>
-                          </div>
-                        </MenuItem>
-                      )
-                    }
                   </div>
                   <MenuItem>
                     <div className='p-1' onClick={() => handleLogout()}>

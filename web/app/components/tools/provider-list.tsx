@@ -18,17 +18,23 @@ import PluginDetailPanel from '@/app/components/plugins/plugin-detail-panel'
 import { useSelector as useAppContextSelector } from '@/context/app-context'
 import { useAllToolProviders } from '@/service/use-tools'
 import { useInstalledPluginList, useInvalidateInstalledPluginList } from '@/service/use-plugins'
+import { useAppContext } from '@/context/app-context'
 
 const ProviderList = () => {
   const { t } = useTranslation()
   const containerRef = useRef<HTMLDivElement>(null)
+  // takin code:hidden  builtin page
+  const { isCurrentWorkspaceOwner } = useAppContext()
+ 
+
   const { enable_marketplace } = useAppContextSelector(s => s.systemFeatures)
 
   const [activeTab, setActiveTab] = useTabSearchParams({
     defaultTab: 'builtin',
   })
   const options = [
-    { value: 'builtin', text: t('tools.type.builtIn') },
+    //  {/* takin code:hidden  builtin page */}
+    // { value: 'builtin', text: t('tools.type.builtIn') },
     { value: 'api', text: t('tools.type.custom') },
     { value: 'workflow', text: t('tools.type.workflow') },
   ]
@@ -130,8 +136,9 @@ const ProviderList = () => {
           {!filteredCollectionList.length && activeTab === 'builtin' && (
             <Empty lightCard text={t('tools.noTools')} className='h-[224px] px-12' />
           )}
+          {/* takin code:hidden  builtin page */}
           {
-            enable_marketplace && activeTab === 'builtin' && (
+            isCurrentWorkspaceOwner && enable_marketplace && activeTab === 'builtin' && (
               <Marketplace
                 onMarketplaceScroll={() => {
                   containerRef.current?.scrollTo({ top: containerRef.current.scrollHeight, behavior: 'smooth' })

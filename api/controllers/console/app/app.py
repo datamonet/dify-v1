@@ -26,6 +26,7 @@ from libs.login import login_required
 from models import Account, App
 from services.app_dsl_service import AppDslService, ImportMode
 from services.app_service import AppService
+from services.recommended_app_service import RecommendedAppService
 
 ALLOW_CREATE_APP_MODES = ["chat", "agent-chat", "advanced-chat", "workflow", "completion"]
 
@@ -76,7 +77,6 @@ class AppListApi(Resource):
             return {"data": [], "total": 0, "page": 1, "limit": 20, "has_more": False}
 
         return marshal(app_pagination, app_pagination_fields)
-
     @setup_required
     @login_required
     @account_initialization_required
@@ -156,6 +156,9 @@ class AppApi(Resource):
         if not current_user.is_editor:
             raise Forbidden()
 
+        # takin code: 删除关联的推荐记录
+        RecommendedAppService().delete_app(app_model.id)
+        
         app_service = AppService()
         app_service.delete_app(app_model)
 

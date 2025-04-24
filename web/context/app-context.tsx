@@ -12,6 +12,7 @@ import type { ICurrentWorkspace, LangGeniusVersionResponse, UserProfileResponse 
 import MaintenanceNotice from '@/app/components/header/maintenance-notice'
 import type { SystemFeatures } from '@/types/feature'
 import { defaultSystemFeatures } from '@/types/feature'
+import { getUserInfo } from '@/app/api/user'
 import { noop } from 'lodash-es'
 
 export type AppContextValue = {
@@ -106,7 +107,17 @@ export const AppContextProvider: FC<AppContextProviderProps> = ({ children }) =>
   const updateUserProfileAndVersion = useCallback(async () => {
     if (userProfileResponse && !userProfileResponse.bodyUsed) {
       const result = await userProfileResponse.json()
-      setUserProfile(result)
+      // get user info from takin
+      // takin code:后续的扣费、跳转个人详情需要用到takin的用户信息
+      const takinUserInfo = await getUserInfo()
+      setUserProfile({
+        ...result,
+        role: takinUserInfo?.role,
+        name: takinUserInfo?.name || result.name,
+        avatar_url: takinUserInfo?.image || result.avatar,
+        credits: takinUserInfo?.credits || 0,
+        takin_id: takinUserInfo?.id || '',
+      })
       const current_version = userProfileResponse.headers.get('x-version')
       const current_env = process.env.NODE_ENV === 'development' ? 'DEVELOPMENT' : userProfileResponse.headers.get('x-env')
       const versionData = await fetchLanggeniusVersion({ url: '/version', params: { current_version } })

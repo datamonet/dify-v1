@@ -35,6 +35,8 @@ import type { OpeningStatement } from '@/app/components/base/features/types'
 import type { InputVar } from '@/app/components/workflow/types'
 import type { UpdatePluginPayload } from '@/app/components/plugins/types'
 import UpdatePlugin from '@/app/components/plugins/update-plugin'
+// takin code：积分检查
+import CreditsBillingModal from '@/app/components/billing/credits-billing-modal'
 import { removeSpecificQueryParam } from '@/utils'
 import { noop } from 'lodash-es'
 
@@ -76,6 +78,7 @@ export type ModalContextState = {
     onAutoAddPromptVariable?: (variable: PromptVariable[]) => void
   }> | null>>
   setShowUpdatePluginModal: Dispatch<SetStateAction<ModalState<UpdatePluginPayload> | null>>
+  setShowCreditsBillingModal: Dispatch<SetStateAction<boolean>>
 }
 const ModalContext = createContext<ModalContextState>({
   setShowAccountSettingModal: noop,
@@ -90,6 +93,7 @@ const ModalContext = createContext<ModalContextState>({
   setShowModelLoadBalancingEntryModal: noop,
   setShowOpeningModal: noop,
   setShowUpdatePluginModal: noop,
+  setShowCreditsBillingModal: noop,
 })
 
 export const useModalContext = () => useContext(ModalContext)
@@ -119,6 +123,7 @@ export const ModalContextProvider = ({
     onAutoAddPromptVariable?: (variable: PromptVariable[]) => void
   }> | null>(null)
   const [showUpdatePluginModal, setShowUpdatePluginModal] = useState<ModalState<UpdatePluginPayload> | null>(null)
+  const [showCreditsBillingModal, setShowCreditsBillingModal] = useState(false)
 
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -246,6 +251,7 @@ export const ModalContextProvider = ({
       setShowModelLoadBalancingEntryModal,
       setShowOpeningModal,
       setShowUpdatePluginModal,
+      setShowCreditsBillingModal,
     }}>
       <>
         {children}
@@ -369,6 +375,14 @@ export const ModalContextProvider = ({
                 setShowUpdatePluginModal(null)
                 showUpdatePluginModal.onSaveCallback?.({} as any)
               }}
+            />
+          )
+        }
+        {
+          showCreditsBillingModal && (
+            <CreditsBillingModal
+              show={showCreditsBillingModal}
+              onHide={() => setShowCreditsBillingModal(false)}
             />
           )
         }

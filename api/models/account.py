@@ -18,8 +18,8 @@ class AccountStatus(enum.StrEnum):
     BANNED = "banned"
     CLOSED = "closed"
 
-
-class Account(UserMixin, Base):
+# taking command: 继承db.Model，方便查询。flask db upgrade head
+class Account(UserMixin, db.Model):
     __tablename__ = "accounts"
     __table_args__ = (db.PrimaryKeyConstraint("id", name="account_pkey"), db.Index("account_email_idx", "email"))
 

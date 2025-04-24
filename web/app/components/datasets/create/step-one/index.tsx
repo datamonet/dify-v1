@@ -168,7 +168,8 @@ const StepOne = ({
                         {t('datasetCreation.stepOne.dataSourceType.file')}
                       </span>
                     </div>
-                    <div
+                    {/* takin code: enable notion */}
+                    {/* <div
                       className={cn(
                         s.dataSourceItem,
                         'system-sm-medium',
@@ -208,8 +209,7 @@ const StepOne = ({
                       >
                         {t('datasetCreation.stepOne.dataSourceType.web')}
                       </span>
-                      </div>
-                    )}
+                    </div> */}
                   </div>
                 )
               }

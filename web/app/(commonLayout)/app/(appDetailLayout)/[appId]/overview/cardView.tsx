@@ -131,12 +131,13 @@ const CardView: FC<ICardViewProps> = ({ appId, isInPanel, className }) => {
         onGenerateCode={onGenerateCode}
         onSaveSiteConfig={onSaveSiteConfig}
       />
-      <AppCard
+      {/* takin code: hidden API access */}
+      {/* <AppCard
         cardType="api"
         appInfo={appDetail}
         isInPanel={isInPanel}
         onChangeStatus={onChangeApiStatus}
-      />
+      /> */}
     </div>
   )
 }

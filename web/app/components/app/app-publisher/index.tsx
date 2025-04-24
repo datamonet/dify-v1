@@ -2,6 +2,7 @@ import {
   memo,
   useCallback,
   useState,
+  useMemo
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
@@ -34,6 +35,10 @@ import WorkflowToolConfigureButton from '@/app/components/tools/workflow-tool/co
 import type { InputVar } from '@/app/components/workflow/types'
 import { appDefaultIconBackground } from '@/config'
 import type { PublishWorkflowParams } from '@/types/workflow'
+// takin code:import
+import PermissionsRadio from './permissions-radio'
+import useSWR from 'swr'
+import { createRecommendedApp, deleteRecommendedApp, fetchAppDetail, fetchAppList } from '@/service/explore'
 
 export type AppPublisherProps = {
   disabled?: boolean
@@ -71,6 +76,8 @@ const AppPublisher = ({
   onRefreshData,
 }: AppPublisherProps) => {
   const { t } = useTranslation()
+  const [postStatus, setPostStatus] = useState(false)
+  const [posted, setPosted] = useState(false)
   const [published, setPublished] = useState(false)
   const [open, setOpen] = useState(false)
   const appDetail = useAppStore(state => state.appDetail)
@@ -84,15 +91,35 @@ const AppPublisher = ({
     return dayjs(time).locale(language === 'zh_Hans' ? 'zh-cn' : language.replace('_', '-')).fromNow()
   }, [language])
 
+  // takin code:设置app的公开状态
+  const handlePosted = async () => {
+    if (postStatus === posted)
+      return
+
+    if (posted) {
+      await createRecommendedApp(
+        appDetail?.id || '',
+        appDetail?.description,
+        appMode,
+      )
+    }
+    else {
+      await deleteRecommendedApp(appDetail?.id || '')
+    }
+    mutate()
+  }
+
   const handlePublish = useCallback(async (params?: ModelAndParameter | PublishWorkflowParams) => {
     try {
+      // takin code:设置app的公开状态
+      await handlePosted()
       await onPublish?.(params)
       setPublished(true)
     }
     catch {
       setPublished(false)
     }
-  }, [onPublish])
+  }, [onPublish, published, posted, handlePosted]) // takin code: include all dependencies
 
   const handleRestore = useCallback(async () => {
     try {
@@ -139,6 +166,43 @@ const AppPublisher = ({
     handlePublish()
   },
   { exactMatch: true, useCapture: true })
+
+
+  const { mutate } = useSWR(
+    ['/explore/apps'],
+    () =>
+      fetchAppList().then(({ categories, community, recommended_apps }) => ({
+        categories,
+        community,
+        recommended_apps,
+        allList: [...community, ...recommended_apps].sort((a, b) => a.position - b.position),
+      })),
+    {
+      fallbackData: {
+        categories: [],
+        community: [],
+        recommended_apps: [],
+        allList: [],
+      },
+    },
+  )
+
+
+  useMemo(() => {
+    const handlePostStatus = async () => {
+      try {
+        const response = await fetchAppDetail(appDetail?.id || '')
+        setPosted(!!response)
+        setPostStatus(!!response)
+      }
+      catch (e) {
+        setPosted(false)
+      }
+    }
+
+    if (appDetail)
+      handlePostStatus()
+  }, [appDetail])
 
   return (
     <>
@@ -208,14 +272,16 @@ const AppPublisher = ({
                         ? t('workflow.common.published')
                         : (
                           <div className='flex gap-1'>
-                            <span>{t('workflow.common.publishUpdate')}</span>
-                            <div className='flex gap-0.5'>
+                            <span>{t('workflow.common.publish')}</span>
+                            {/* takin code:隐藏快捷键显示 */}
+                            {/* <span>{t('workflow.common.publishUpdate')}</span> */}
+                            {/* <div className='flex gap-0.5'>
                               {PUBLISH_SHORTCUT.map(key => (
                                 <span key={key} className='system-kbd h-4 w-4 rounded-[4px] bg-components-kbd-bg-white text-text-primary-on-surface'>
                                   {key}
                                 </span>
                               ))}
-                            </div>
+                            </div> */}
                           </div>
                         )
                     }
@@ -223,71 +289,21 @@ const AppPublisher = ({
                 )
               }
             </div>
-            <div className='border-t-[0.5px] border-t-divider-regular p-4 pt-3'>
-              <SuggestedAction
-                disabled={!publishedAt}
-                link={appURL}
-                icon={<RiPlayCircleLine className='h-4 w-4' />}
-              >
-                {t('workflow.common.runApp')}
-              </SuggestedAction>
-              {appDetail?.mode === 'workflow'
-                ? (
-                  <SuggestedAction
-                    disabled={!publishedAt}
-                    link={`${appURL}${appURL.includes('?') ? '&' : '?'}mode=batch`}
-                    icon={<RiPlayList2Line className='h-4 w-4' />}
-                  >
-                    {t('workflow.common.batchRunApp')}
-                  </SuggestedAction>
-                )
-                : (
-                  <SuggestedAction
-                    onClick={() => {
-                      setEmbeddingModalOpen(true)
-                      handleTrigger()
-                    }}
-                    disabled={!publishedAt}
-                    icon={<CodeBrowser className='h-4 w-4' />}
-                  >
-                    {t('workflow.common.embedIntoSite')}
-                  </SuggestedAction>
-                )}
-              <SuggestedAction
-                onClick={() => {
-                  publishedAt && handleOpenInExplore()
-                }}
-                disabled={!publishedAt}
-                icon={<RiPlanetLine className='h-4 w-4' />}
-              >
-                {t('workflow.common.openInExplore')}
-              </SuggestedAction>
-              <SuggestedAction
-                disabled={!publishedAt}
-                link='./develop'
-                icon={<RiTerminalBoxLine className='h-4 w-4' />}
-              >
-                {t('workflow.common.accessAPIReference')}
-              </SuggestedAction>
-              {appDetail?.mode === 'workflow' && (
-                <WorkflowToolConfigureButton
-                  disabled={!publishedAt}
-                  published={!!toolPublished}
-                  detailNeedUpdate={!!toolPublished && published}
-                  workflowAppId={appDetail?.id}
-                  icon={{
-                    content: (appDetail.icon_type === 'image' ? '🤖' : appDetail?.icon) || '🤖',
-                    background: (appDetail.icon_type === 'image' ? appDefaultIconBackground : appDetail?.icon_background) || appDefaultIconBackground,
-                  }}
-                  name={appDetail?.name}
-                  description={appDetail?.description}
-                  inputs={inputs}
-                  handlePublish={handlePublish}
-                  onRefreshData={onRefreshData}
-                />
-              )}
-            </div>
-          </div>
+            {/*takin code:add PermissionsRadio */}
+            <div className="px-4 py-2 flex flex-col">
+              <div className="flex items-center text-sm h-6 text-text-tertiary">
+                {t('datasetSettings.form.permissions')}
+              </div>
+                <PermissionsRadio
+                itemClassName="sm:w-36 text-sm mt-2"
+                      value={posted ? 'all_team_members' : 'only_me'}
+                      onChange={(v) => {
+                        setPosted(v === 'all_team_members')
+                        setPublished(false)
+                      }
+                      }/>        
+           </div> 
+        </div> 
         </PortalToFollowElemContent>
         <EmbeddedModal
           siteInfo={appDetail?.site}

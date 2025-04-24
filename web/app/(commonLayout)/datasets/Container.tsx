@@ -43,9 +43,9 @@ const Container = () => {
   const options = useMemo(() => {
     return [
       { value: 'dataset', text: t('dataset.datasets') },
-      ...(currentWorkspace.role === 'dataset_operator' ? [] : [{ value: 'api', text: t('dataset.datasetsApi') }]),
+      // takin code:hidden api page
     ]
-  }, [currentWorkspace.role, t])
+  }, [t])
 
   const [activeTab, setActiveTab] = useTabSearchParams({
     defaultTab: 'dataset',
@@ -93,14 +93,15 @@ const Container = () => {
         />
         {activeTab === 'dataset' && (
           <div className='flex items-center justify-center gap-2'>
-            {isCurrentWorkspaceOwner && <CheckboxWithLabel
+            {/* takin code: hidden workspace  */}
+            {/* {isCurrentWorkspaceOwner && <CheckboxWithLabel
               isChecked={includeAll}
               onChange={toggleIncludeAll}
               label={t('dataset.allKnowledge')}
               labelClassName='system-md-regular text-text-secondary'
               className='mr-2'
               tooltip={t('dataset.allKnowledgeDescription') as string}
-            />}
+            />} */}
             <TagFilter type='knowledge' value={tagFilterValue} onChange={handleTagsChange} />
             <Input
               showLeftIcon
@@ -125,7 +126,8 @@ const Container = () => {
       {activeTab === 'dataset' && (
         <>
           <Datasets containerRef={containerRef} tags={tagIDs} keywords={searchKeywords} includeAll={includeAll} />
-          <DatasetFooter />
+          {/* takin code:去除知识库底部 */}
+          {/* <DatasetFooter /> */}
           {showTagManagementModal && (
             <TagManagementModal type='knowledge' show={showTagManagementModal} />
           )}

@@ -2,12 +2,14 @@ import concurrent.futures
 import datetime
 import json
 import logging
+import os
 import re
 import threading
 import time
 import uuid
 from typing import Any, Optional, cast
 
+import requests
 from flask import current_app
 from flask_login import current_user  # type: ignore
 from sqlalchemy.orm.exc import ObjectDeletedError
@@ -16,7 +18,8 @@ from configs import dify_config
 from core.entities.knowledge_entities import IndexingEstimate, PreviewDetail, QAPreviewDetail
 from core.errors.error import ProviderTokenNotInitError
 from core.model_manager import ModelInstance, ModelManager
-from core.model_runtime.entities.model_entities import ModelType
+from core.model_runtime.entities.model_entities import ModelType, PriceType
+from core.model_runtime.model_providers.__base.text_embedding_model import TextEmbeddingModel
 from core.rag.cleaner.clean_processor import CleanProcessor
 from core.rag.datasource.keyword.keyword_factory import Keyword
 from core.rag.docstore.dataset_docstore import DatasetDocumentStore
@@ -35,6 +38,7 @@ from extensions.ext_database import db
 from extensions.ext_redis import redis_client
 from extensions.ext_storage import storage
 from libs import helper
+from models.account import Account
 from models.dataset import ChildChunk, Dataset, DatasetProcessRule, DocumentSegment
 from models.dataset import Document as DatasetDocument
 from models.model import UploadFile
@@ -584,6 +588,47 @@ class IndexingRunner:
             },
         )
 
+        # takin code:文件上传扣费，Calculate price and call pricing API
+        if embedding_model_instance:
+            embedding_model_type_instance = cast(TextEmbeddingModel, embedding_model_instance.model_type_instance)
+            embedding_price_info = embedding_model_type_instance.get_price(
+                model=embedding_model_instance.model,
+                credentials=embedding_model_instance.credentials,
+                price_type=PriceType.INPUT,
+                tokens=tokens,
+            )
+            
+            # Call pricing API
+            user_email = None
+            if dataset_document.created_by:
+                user = Account.query.filter_by(id=dataset_document.created_by).first()
+                if user:
+                    user_email = user.email
+
+            try:
+                if not user_email:
+                    current_app.logger.warning(f"No user email found for document {dataset_document.id}, skipping pricing API call")
+                    return
+
+                response = requests.post(
+                    f"{os.getenv('TAKIN_API_URL')}/api/external/dify/pricing/knowledge",
+                    json={
+                        "email": user_email,
+                        "usage": float(embedding_price_info.total_amount),
+                        "knowledgeInfo": {
+                            "datasetId": dataset.id,
+                            "batchId": dataset_document.batch,
+                            "documentId": dataset_document.id,
+                        }
+                    },
+                )
+                response.raise_for_status()
+            except Exception as e:
+                current_app.logger.error(f"Failed to call pricing API for document {dataset_document.id}: {str(e)}")
+
+       
+
+ 
     @staticmethod
     def _process_keyword_index(flask_app, dataset_id, document_id, documents):
         with flask_app.app_context():

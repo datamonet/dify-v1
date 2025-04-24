@@ -12,6 +12,7 @@ def get_parameters_from_feature_dict(
     Mapping from feature dict to webapp parameters
     """
     return {
+        "agent_mode": features_dict.get("agent_mode"),  # takin code:explore中需要返回agent的配置，主要用于tools的扣费
         "opening_statement": features_dict.get("opening_statement"),
         "suggested_questions": features_dict.get("suggested_questions", []),
         "suggested_questions_after_answer": features_dict.get("suggested_questions_after_answer", {"enabled": False}),

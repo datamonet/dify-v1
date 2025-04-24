@@ -13,7 +13,7 @@ import ExploreNav from './explore-nav'
 import ToolsNav from './tools-nav'
 import { WorkspaceProvider } from '@/context/workspace-context'
 import { useAppContext } from '@/context/app-context'
-import LogoSite from '@/app/components/base/logo/logo-site'
+import LogoSite from '@/app/components/base/logo/logo-takin'
 import WorkplaceSelector from '@/app/components/header/account-dropdown/workplace-selector'
 import useBreakpoints, { MediaType } from '@/hooks/use-breakpoints'
 import { useProviderContext } from '@/context/provider-context'
@@ -29,7 +29,7 @@ const navClassName = `
 `
 
 const Header = () => {
-  const { isCurrentWorkspaceEditor, isCurrentWorkspaceDatasetOperator } = useAppContext()
+  const { isCurrentWorkspaceOwner,isCurrentWorkspaceEditor, isCurrentWorkspaceDatasetOperator } = useAppContext()
   const selectedSegment = useSelectedLayoutSegment()
   const media = useBreakpoints()
   const isMobile = media === MediaType.mobile
@@ -59,23 +59,24 @@ const Header = () => {
         </div>}
         {
           !isMobile
-          && <div className='flex w-64 shrink-0 items-center gap-1.5 self-stretch p-2 pl-3'>
-            <Link href="/apps" className='flex h-8 w-8 shrink-0 items-center justify-center gap-2'>
+          && <div className='flex w-64 p-2 pl-3 gap-1.5 items-center shrink-0 self-stretch'>
+            <Link href={process.env.NEXT_PUBLIC_TAKIN_API_URL!} className='flex items-center mr-4'>
               <LogoSite className='object-contain' />
             </Link>
-            <div className='font-light text-divider-deep'>/</div>
+            {/* takin code: hidden workspace */}
+            {/* <div className='font-light text-divider-deep'>/</div>
             <div className='flex items-center gap-0.5'>
               <WorkspaceProvider>
                 <WorkplaceSelector />
               </WorkspaceProvider>
               {enableBilling ? <PlanBadge allowHover sandboxAsUpgrade plan={plan.type} onClick={handlePlanClick} /> : <LicenseNav />}
-            </div>
+            </div> */}
           </div>
         }
       </div >
       {isMobile && (
         <div className='flex'>
-          <Link href="/apps" className='mr-4 flex items-center'>
+          <Link href={process.env.NEXT_PUBLIC_TAKIN_API_URL!} className='flex items-center mr-4'>
             <LogoSite />
           </Link>
           <div className='font-light text-divider-deep'>/</div>
@@ -94,9 +95,12 @@ const Header = () => {
       }
       <div className='flex shrink-0 items-center'>
         <EnvNav />
-        <div className='mr-2'>
-          <PluginsNav />
-        </div>
+        {/* takin commadnd: hidden workspace */}
+        {isCurrentWorkspaceOwner && (
+          <div className='mr-3'>
+            <PluginsNav />
+          </div>
+        )}
         <AccountDropdown />
       </div>
       {

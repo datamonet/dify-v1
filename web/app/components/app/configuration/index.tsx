@@ -1059,7 +1059,8 @@ const Configuration: FC = () => {
               onAutoAddPromptVariable={handleAddPromptVariable}
             />
           )}
-          <PluginDependency />
+          {/* takin code: takin code隐藏插件检查弹窗 */}
+          {/* <PluginDependency /> */}
         </>
       </FeaturesProvider>
     </ConfigContext.Provider>

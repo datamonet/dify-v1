@@ -31,6 +31,8 @@ import { useFeatures } from '@/app/components/base/features/hooks'
 import type { InputForm } from '@/app/components/base/chat/chat/type'
 import { getLastAnswer } from '@/app/components/base/chat/utils'
 import { canFindTool } from '@/utils'
+// takin code:add modal
+import { useModalContext } from '@/context/modal-context'
 
 type ChatItemProps = {
   modelAndParameter: ModelAndParameter
@@ -39,6 +41,7 @@ const ChatItem: FC<ChatItemProps> = ({
   modelAndParameter,
 }) => {
   const { userProfile } = useAppContext()
+  const { setShowCreditsBillingModal } = useModalContext()
   const {
     modelConfig,
     appId,
@@ -84,6 +87,7 @@ const ChatItem: FC<ChatItemProps> = ({
   useFormattingChangedSubscription(chatList)
 
   const doSend: OnSend = useCallback((message, files) => {
+    if ((userProfile.credits || 0) <= 0) return setShowCreditsBillingModal(true)
     const currentProvider = textGenerationModelList.find(item => item.provider === modelAndParameter.provider)
     const currentModel = currentProvider?.models.find(model => model.model === modelAndParameter.model)
     const supportVision = currentModel?.features?.includes(ModelFeatureEnum.vision)

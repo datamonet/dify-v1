@@ -1,11 +1,17 @@
 'use client'
 import { useTranslation } from 'react-i18next'
 import { PlusIcon } from '@heroicons/react/20/solid'
+import { RiShareLine } from '@remixicon/react'
+import copy from 'copy-to-clipboard'
+import { usePathname } from 'next/navigation'
 import Button from '../../base/button'
 import cn from '@/utils/classnames'
 import type { App } from '@/models/explore'
 import AppIcon from '@/app/components/base/app-icon'
 import { AppTypeIcon } from '../../app/type-selector'
+import Toast from '@/app/components/base/toast'
+import { FavouriteBtn } from '@/app/components/base/tag-management/favourite'
+
 export type AppCardProps = {
   app: App
   canCreate: boolean
@@ -21,6 +27,12 @@ const AppCard = ({
 }: AppCardProps) => {
   const { t } = useTranslation()
   const { app: appBasicInfo } = app
+  const pathname = usePathname()
+
+  const onClickCopy = () => {
+    copy(`${window.location.origin}${pathname}?id=${app.app_id}`)
+    Toast.notify({ type: 'success', message: t('common.actionMsg.copyLinkSuccessfully') }) // takin code: add i18n k/v
+  }
   return (
     <div className={cn('group relative col-span-1 flex cursor-pointer flex-col overflow-hidden rounded-lg border-[0.5px] border-components-panel-border bg-components-panel-on-panel-item-bg pb-2 shadow-sm transition-all duration-200 ease-in-out hover:shadow-lg')}>
       <div className='flex h-[66px] shrink-0 grow-0 items-center gap-3 px-[14px] pb-3 pt-[14px]'>
@@ -45,7 +57,15 @@ const AppCard = ({
             {appBasicInfo.mode === 'agent-chat' && <div className='truncate'>{t('app.types.agent').toUpperCase()}</div>}
             {appBasicInfo.mode === 'workflow' && <div className='truncate'>{t('app.types.workflow').toUpperCase()}</div>}
             {appBasicInfo.mode === 'completion' && <div className='truncate'>{t('app.types.completion').toUpperCase()}</div>}
+            {/* takin code: 增加卡片的作者 */}
+            {appBasicInfo.username && <span className="px-2">By {appBasicInfo.username}</span>}
           </div>
+        </div>
+        <div className="flex justify-end space-x-2 mb-5">
+          <div onClick={() => onClickCopy()} className="flex justify-center items-center">
+            <RiShareLine className='w-4 h-4 mr-1 hover:text-blue-600'/>
+          </div>
+          <FavouriteBtn app={appBasicInfo}/>
         </div>
       </div>
       <div className="description-wrapper system-xs-regular h-[90px] px-[14px] text-text-tertiary">

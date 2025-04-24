@@ -140,7 +140,7 @@ function CreateApp({ onClose, onSuccess, onCreateFromTemplate }: CreateAppProps)
                   onClick={() => {
                     setAppMode('agent-chat')
                   }} />
-                <AppTypeCard
+                {/* <AppTypeCard
                   active={appMode === 'completion'}
                   title={t('app.newApp.completeApp')}
                   description={t('app.newApp.completionShortDescription')}
@@ -149,7 +149,7 @@ function CreateApp({ onClose, onSuccess, onCreateFromTemplate }: CreateAppProps)
                   </div>}
                   onClick={() => {
                     setAppMode('completion')
-                  }} />
+                  }} /> */}
               </div>
             </div>
             <div>
