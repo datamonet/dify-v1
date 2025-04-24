@@ -84,7 +84,9 @@ class ApiToolProvider(Base):
     privacy_policy = db.Column(db.String(255), nullable=True)
     # custom_disclaimer
     custom_disclaimer: Mapped[str] = mapped_column(sa.TEXT, default="")
-
+    # takin code: show whether the tool is published or not
+    publish = db.Column(db.Boolean, default=False)
+    
     created_at: Mapped[datetime] = mapped_column(db.DateTime, nullable=False, server_default=func.current_timestamp())
     updated_at: Mapped[datetime] = mapped_column(db.DateTime, nullable=False, server_default=func.current_timestamp())
 

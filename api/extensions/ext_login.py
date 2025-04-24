@@ -37,7 +37,7 @@ def load_user_from_request(request_from_flask_login):
     # user_id = decoded.get("user_id")
     # logged_in_account = AccountService.load_logged_in_account(account_id=user_id)
     
-    # 此处为适应takin的mongo数据库，只查询固定的邮件用户
+    # 此处为适应takin的数据库，只查询固定的邮件用户
     email = decoded.get("email")
     logged_in_account = AccountService.load_logged_in_account(email=email)
         
