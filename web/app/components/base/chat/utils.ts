@@ -15,6 +15,21 @@ async function decodeBase64AndDecompress(base64String: string) {
   }
 }
 
+// takin code: add encode base64 and compress
+async function compressAndEncodeBase64(text: string) {
+  try {
+    const encoder = new TextEncoder()
+    const compressed = await new Response(
+      encoder.encode(text).buffer
+    ).body!.pipeThrough(new CompressionStream('gzip'))
+    const compressedArray = await new Response(compressed).arrayBuffer()
+    return btoa(String.fromCharCode(...new Uint8Array(compressedArray)))
+  }
+  catch {
+    return undefined
+  }
+}
+
 async function getProcessedInputsFromUrlParams(): Promise<Record<string, any>> {
   const urlParams = new URLSearchParams(window.location.search)
   const inputs: Record<string, any> = {}
@@ -38,6 +53,7 @@ async function getProcessedSystemVariablesFromUrlParams(): Promise<Record<string
         systemVariables[key.slice(4)] = await decodeBase64AndDecompress(decodeURIComponent(value))
     }),
   )
+  console.log('systemVariables',systemVariables)
   return systemVariables
 }
 
@@ -190,4 +206,6 @@ export {
   getLastAnswer,
   buildChatItemTree,
   getThreadMessages,
+  compressAndEncodeBase64,
+  decodeBase64AndDecompress,
 }

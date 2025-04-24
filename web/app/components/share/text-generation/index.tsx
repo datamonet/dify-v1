@@ -39,6 +39,11 @@ import { useAppFavicon } from '@/hooks/use-app-favicon'
 import LogoSite from '@/app/components/base/logo/logo-site'
 import cn from '@/utils/classnames'
 
+// takin code:add modal
+import { useContext } from 'use-context-selector'
+import AppContext from '@/context/app-context'
+import { useModalContext } from '@/context/modal-context'
+
 const GROUP_SIZE = 5 // to avoid RPM(Request per minute) limit. The group task finished then the next group.
 enum TaskStatus {
   pending = 'pending',
@@ -69,6 +74,8 @@ const TextGeneration: FC<IMainProps> = ({
   isWorkflow = false,
 }) => {
   const { notify } = Toast
+  const { userProfile } = useContext(AppContext)
+  const { setShowCreditsBillingModal } = useModalContext()
 
   const { t } = useTranslation()
   const media = useBreakpoints()
@@ -135,6 +142,11 @@ const TextGeneration: FC<IMainProps> = ({
   const [completionFiles, setCompletionFiles] = useState<VisionFile[]>([])
 
   const handleSend = () => {
+    console.log('handleSend')
+    if ((userProfile.credits || 0) <= 0) {
+      return setShowCreditsBillingModal(true)
+    }
+
     setIsCallBatchAPI(false)
     setControlSend(Date.now())
 
@@ -291,6 +303,9 @@ const TextGeneration: FC<IMainProps> = ({
     return true
   }
   const handleRunBatch = (data: string[][]) => {
+    if ((userProfile.credits || 0) <= 0)
+      return setShowCreditsBillingModal(true)
+
     if (!checkBatchInputs(data))
       return
     if (!allTasksFinished) {

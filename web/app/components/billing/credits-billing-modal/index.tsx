@@ -32,7 +32,7 @@ const CreditsBillingModal = ({
       </div>
 
       <div className='flex justify-end gap-2'>
-        <Button onClick={onHide}>{t('common.operation.cancel')}</Button>
+        <Button onClick={onHide}>Cancel</Button>
         <Button variant='primary' onClick={() => {
           onHide()
           window.open(`${process.env.NEXT_PUBLIC_TAKIN_API_URL}/pricing`, '_blank')

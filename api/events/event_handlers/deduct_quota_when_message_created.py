@@ -1,3 +1,4 @@
+import logging
 from datetime import UTC, datetime
 
 from configs import dify_config
@@ -7,7 +8,9 @@ from core.plugin.entities.plugin import ModelProviderID
 from events.message_event import message_was_created
 from extensions.ext_database import db
 from models.provider import Provider, ProviderType
+from models import EndUser, Account
 
+logger = logging.getLogger(__name__)
 
 @message_was_created.connect
 def handle(sender, **kwargs):
@@ -21,6 +24,37 @@ def handle(sender, **kwargs):
     provider_model_bundle = model_config.provider_model_bundle
     provider_configuration = provider_model_bundle.configuration
 
+
+    # TODO：扣费 # takin code: takin cost agent start
+    # # 所有工具调用信息以及对话信息
+    # agent_thoughts = message.agent_thoughts
+    # # 基本的USD价格
+    # total_price = message.total_price
+    # # agent模式
+    # mode = model_config.mode
+
+    # try:
+    #     # 获取end user信息和关联的email
+    #     user_id = message.from_end_user_id
+    #     end_user = db.session.query(EndUser).filter(EndUser.id == user_id).first()
+    #     account = db.session.query(Account).filter(Account.id == end_user.session_id).first() if end_user else None
+    #     user_email = account.email if account else None
+
+    #     response = requests.post(
+    #                     f"{os.getenv('TAKIN_API_URL')}/api/external/dify/pricing/agent",
+    #                     json={
+    #                         "email": user_email,
+    #                         "usage": float(total_price),
+    #                         "agent_thoughts": agent_thoughts,
+    #                         "mode": mode,
+    #                     },
+    #                 )
+
+    #     response.raise_for_status()
+    # except Exception as e:
+    #     logger.error(f"Failed to call pricing API for agent: {str(e)}")
+    #     return
+   
     if provider_configuration.using_provider_type != ProviderType.SYSTEM:
         return
 

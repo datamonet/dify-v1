@@ -45,7 +45,6 @@ const SwrInitor = ({
       }
 
       localStorage?.setItem('console_token', token)
-      localStorage?.setItem('console_token', token)
       setInit(true)
 
       if (pathname !== '/apps')

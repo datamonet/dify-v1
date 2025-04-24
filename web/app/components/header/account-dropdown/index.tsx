@@ -49,7 +49,7 @@ export default function AppSelector() {
     localStorage.removeItem('console_token')
     localStorage.removeItem('refresh_token')
 
-    router.push(`${process.env.NEXT_PUBLIC_TAKIN_API_URL}/signin?callbackUrl=${encodeURIComponent(process.env.NEXT_PUBLIC_CALLBACK_URL || '')}`)
+    router.push(`${process.env.NEXT_PUBLIC_TAKIN_API_URL}/signin?callbackUrl=${encodeURIComponent(window.location.href)}`)
   }
 
   return (

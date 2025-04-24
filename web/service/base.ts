@@ -471,7 +471,7 @@ export const request = async<T>(url: string, options = {}, otherOptions?: IOther
         const loginUrl = `${
           process.env.NEXT_PUBLIC_TAKIN_API_URL
         }/signin?callbackUrl=${encodeURIComponent(
-          process.env.NEXT_PUBLIC_CALLBACK_URL!,
+          globalThis.location.href
         )}`
       // const loginUrl = `${globalThis.location.origin}/signin`
       if (parseErr) {
