@@ -11,17 +11,14 @@ import EnvNav from './env-nav'
 import PluginsNav from './plugins-nav'
 import ExploreNav from './explore-nav'
 import ToolsNav from './tools-nav'
-import { WorkspaceProvider } from '@/context/workspace-context'
 import { useAppContext } from '@/context/app-context'
 import LogoSite from '@/app/components/base/logo/logo-takin'
-import WorkplaceSelector from '@/app/components/header/account-dropdown/workplace-selector'
 import useBreakpoints, { MediaType } from '@/hooks/use-breakpoints'
 import { useProviderContext } from '@/context/provider-context'
 import { useModalContext } from '@/context/modal-context'
 import PlanBadge from './plan-badge'
 import LicenseNav from './license-env'
 import { Plan } from '../billing/type'
-import Credits from '@/app/components/header/credits'
 
 const navClassName = `
   flex items-center relative mr-0 sm:mr-3 px-3 h-8 rounded-xl
@@ -30,7 +27,7 @@ const navClassName = `
 `
 
 const Header = () => {
-  const { isCurrentWorkspaceOwner,isCurrentWorkspaceEditor, isCurrentWorkspaceDatasetOperator } = useAppContext()
+  const { isCurrentWorkspaceOwner, isCurrentWorkspaceEditor, isCurrentWorkspaceDatasetOperator } = useAppContext()
   const selectedSegment = useSelectedLayoutSegment()
   const media = useBreakpoints()
   const isMobile = media === MediaType.mobile
@@ -60,8 +57,8 @@ const Header = () => {
         </div>}
         {
           !isMobile
-          && <div className='flex w-64 p-2 pl-3 gap-1.5 items-center shrink-0 self-stretch'>
-            <Link href={process.env.NEXT_PUBLIC_TAKIN_API_URL!} className='flex items-center mr-4'>
+          && <div className='flex w-64 shrink-0 items-center gap-1.5 self-stretch p-2 pl-3'>
+            <Link href={process.env.NEXT_PUBLIC_TAKIN_API_URL!} className='mr-4 flex items-center'>
               <LogoSite className='object-contain' />
             </Link>
             {/* takin code: hidden workspace */}
@@ -77,7 +74,7 @@ const Header = () => {
       </div >
       {isMobile && (
         <div className='flex'>
-          <Link href={process.env.NEXT_PUBLIC_TAKIN_API_URL!} className='flex items-center mr-4'>
+          <Link href={process.env.NEXT_PUBLIC_TAKIN_API_URL!} className='mr-4 flex items-center'>
             <LogoSite />
           </Link>
           <div className='font-light text-divider-deep'>/</div>
@@ -102,8 +99,6 @@ const Header = () => {
             <PluginsNav />
           </div>
         )}
-        {/* takin commadnd: 积分 */}
-        <Credits />
         <AccountDropdown />
       </div>
       {

@@ -20,7 +20,7 @@ async function compressAndEncodeBase64(text: string) {
   try {
     const encoder = new TextEncoder()
     const compressed = await new Response(
-      encoder.encode(text).buffer
+      encoder.encode(text).buffer,
     ).body!.pipeThrough(new CompressionStream('gzip'))
     const compressedArray = await new Response(compressed).arrayBuffer()
     return btoa(String.fromCharCode(...new Uint8Array(compressedArray)))
@@ -53,7 +53,6 @@ async function getProcessedSystemVariablesFromUrlParams(): Promise<Record<string
         systemVariables[key.slice(4)] = await decodeBase64AndDecompress(decodeURIComponent(value))
     }),
   )
-  console.log('systemVariables',systemVariables)
   return systemVariables
 }
 

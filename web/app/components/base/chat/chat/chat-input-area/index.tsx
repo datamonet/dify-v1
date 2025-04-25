@@ -89,6 +89,7 @@ const ChatInputArea = ({
   const [currentIndex, setCurrentIndex] = useState(-1)
   const isComposingRef = useRef(false)
   const handleSend = () => {
+    console.log('handleSend', userProfile.credits)
     if ((userProfile.credits || 0) <= 0)
       return setShowCreditsBillingModal(true)
 

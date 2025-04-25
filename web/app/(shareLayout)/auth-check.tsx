@@ -42,15 +42,19 @@ const AuthCheckInner: FC<AuthCheckProps> = ({ children }): ReactElement => {
    * @returns {Promise<boolean>} - 如果 URL 被更新返回 true，否则返回 false
    */
   const addUserIdToUrl = async (userId: string) => {
+    // console.log('[AuthCheck] Adding userId to URL:', userId)
     // 只在 URL 中没有 user_id 时添加
     if (!globalThis.location.href.includes('sys.user_id')) {
       const url = new URL(globalThis.location.href)
       // 压缩并编码用户 ID
       const encodedId = await compressAndEncodeBase64(userId)
+      // console.log('[AuthCheck] Encoded userId:', encodedId)
       if (encodedId) {
         url.searchParams.set('sys.user_id', encodedId)
+        setInit(true)
         // 更新 URL（会触发页面重新加载）
-        router.replace(url.toString())
+        router.push(url.toString())
+        router.refresh()
         return true
       }
     }
@@ -63,6 +67,7 @@ const AuthCheckInner: FC<AuthCheckProps> = ({ children }): ReactElement => {
    * @returns {Promise<boolean>} - 如果匹配返回 true，否则返回 false
    */
   const validateUrlUserId = async (currentUserId: string) => {
+    // console.log('[AuthCheck] Validating URL userId for:', currentUserId)
     const url = new URL(globalThis.location.href)
     const urlUserId = url.searchParams.get('sys.user_id')
     if (!urlUserId) return false
@@ -70,9 +75,12 @@ const AuthCheckInner: FC<AuthCheckProps> = ({ children }): ReactElement => {
     try {
       // 解码 URL 中的用户 ID
       const decodedUrlUserId = await decodeBase64AndDecompress(urlUserId)
+      // console.log('[AuthCheck] Decoded URL userId:', decodedUrlUserId)
       // 比较解码后的 ID 与当前用户 ID
       return decodedUrlUserId === currentUserId
-    } catch {
+    }
+ catch (error) {
+      // console.error('[AuthCheck] Error decoding URL userId:', error)
       return false
     }
   }
@@ -83,16 +91,21 @@ const AuthCheckInner: FC<AuthCheckProps> = ({ children }): ReactElement => {
    */
   const handleProfileFetch = async (token?: string) => {
     try {
+      // console.log('[AuthCheck] Fetching user profile...')
       // 获取用户信息
       const response = await get('/account/profile')
+      // console.log('[AuthCheck] Profile response:', response)
       // 如果提供了新 token，更新到 localStorage
       if (token) {
+        // console.log('[AuthCheck] Updating token in localStorage')
         localStorage?.setItem('console_token', token)
       }
 
       // 如果 URL 中有 user_id，验证是否匹配当前用户
       if (globalThis.location.href.includes('sys.user_id')) {
+        // console.log('[AuthCheck] URL contains user_id, validating...')
         const isValidUser = await validateUrlUserId(response.id)
+        // console.log('[AuthCheck] User validation result:', isValidUser)
         if (isValidUser) {
           // 如果用户 ID 匹配，设置 init 为 true
           setInit(true)
@@ -100,17 +113,21 @@ const AuthCheckInner: FC<AuthCheckProps> = ({ children }): ReactElement => {
         }
         // 如果用户 ID 不匹配，更新为正确的用户 ID
         await addUserIdToUrl(response.id)
+        // console.log('------', added)
         return
       }
-      
+
+      // console.log('[AuthCheck] URL does not contain user_id, adding...')
       // 如果 URL 中没有 user_id，添加它
       const redirected = await addUserIdToUrl(response?.id)
       if (!redirected) {
         // 如果没有进行重定向，设置 init 为 true
+        // console.log('[AuthCheck] No redirection needed, initializing...')
         setInit(true)
       }
-    } catch (error) {
-      console.error('Failed to fetch user profile:', error)
+    }
+ catch (error) {
+      // console.error('[AuthCheck] Failed to fetch user profile:', error)
       redirectToLogin()
     }
   }
@@ -121,8 +138,10 @@ const AuthCheckInner: FC<AuthCheckProps> = ({ children }): ReactElement => {
    */
   useEffect(() => {
     const checkAuth = async () => {
+      // console.log('[AuthCheck] Starting auth check...')
       // 从 cookie 获取 token
       const token = await getCookie()
+      // console.log('[AuthCheck] Token from cookie:', token ? 'exists' : 'not found')
       if (!token) {
         redirectToLogin()
         return
@@ -131,7 +150,8 @@ const AuthCheckInner: FC<AuthCheckProps> = ({ children }): ReactElement => {
       // 比较 cookie 中的 token 和 localStorage 中的 token
       if (token === consoleTokenFromLocalStorage) {
         handleProfileFetch()
-      } else {
+      }
+ else {
         // 如果 token 不同，使用新 token 获取用户信息
         handleProfileFetch(token)
       }
@@ -152,7 +172,11 @@ const AuthCheckInner: FC<AuthCheckProps> = ({ children }): ReactElement => {
   }
 
   // 初始化完成后显示子组件
-  return <>{children}</>
+  return (
+    <>
+      {children}
+    </>
+  )
 }
 
 /**
