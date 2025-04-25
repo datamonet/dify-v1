@@ -55,6 +55,7 @@ class ToolNode(BaseNode[ToolNodeData]):
         tool_info = {
             "provider_type": node_data.provider_type.value,
             "provider_id": node_data.provider_id,
+            "tool_name": node_data.tool_name,
             "plugin_unique_identifier": node_data.plugin_unique_identifier,
         }
 

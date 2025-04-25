@@ -2,7 +2,6 @@ import concurrent.futures
 import datetime
 import json
 import logging
-import os
 import re
 import threading
 import time
@@ -598,37 +597,28 @@ class IndexingRunner:
                 tokens=tokens,
             )
             
-            # Call pricing API
-            user_email = None
-            if dataset_document.created_by:
-                user = Account.query.filter_by(id=dataset_document.created_by).first()
-                if user:
-                    user_email = user.email
-
             try:
+                user_email = None
+                if dataset_document.created_by:
+                    user = Account.query.filter_by(id=dataset_document.created_by).first()
+                    if user:
+                        user_email = user.email
+
                 if not user_email:
                     current_app.logger.warning(f"No user email found for document {dataset_document.id}, skipping pricing API call")
                     return
+                from services.pricing_service import call_knowledge_pricing_api
 
-                response = requests.post(
-                    f"{os.getenv('TAKIN_API_URL')}/api/external/dify/pricing/knowledge",
-                    json={
-                        "email": user_email,
-                        "usage": float(embedding_price_info.total_amount),
-                        "knowledgeInfo": {
-                            "datasetId": dataset.id,
-                            "batchId": dataset_document.batch,
-                            "documentId": dataset_document.id,
-                        }
-                    },
+                call_knowledge_pricing_api(
+                    email=user_email,
+                    usage=float(embedding_price_info.total_amount),
+                    dataset_id=dataset.id,
+                    batch_id=dataset_document.batch,
+                    document_id=dataset_document.id
                 )
-                response.raise_for_status()
             except Exception as e:
-                current_app.logger.error(f"Failed to call pricing API for document {dataset_document.id}: {str(e)}")
+                current_app.logger.error(f"Failed to record knowledge usage for document {dataset_document.id}: {str(e)}")
 
-       
-
- 
     @staticmethod
     def _process_keyword_index(flask_app, dataset_id, document_id, documents):
         with flask_app.app_context():

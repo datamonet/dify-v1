@@ -24,37 +24,36 @@ def handle(sender, **kwargs):
     provider_model_bundle = model_config.provider_model_bundle
     provider_configuration = provider_model_bundle.configuration
 
+    # ------------ takin code: takin cost agent start
+    try:
+        # 所有工具调用信息以及对话信息
+        tools_thoughts = [i.tool for i in message.agent_thoughts if i.tool and i.tool.strip()]
+        
+        # 获取用户邮箱
+        user_email = None
+        if message.from_account_id:
+            account = db.session.query(Account).filter(Account.id == message.from_account_id).first()
+            user_email = account.email if account else None
+        elif message.from_end_user_id:
+            end_user = db.session.query(EndUser).filter(EndUser.id == message.from_end_user_id).first()
+            account = db.session.query(Account).filter(Account.id == end_user.session_id).first() if end_user else None
+            user_email = account.email if account else None
 
-    # TODO：扣费 # takin code: takin cost agent start
-    # # 所有工具调用信息以及对话信息
-    # agent_thoughts = message.agent_thoughts
-    # # 基本的USD价格
-    # total_price = message.total_price
-    # # agent模式
-    # mode = model_config.mode
+        # 记录 agent 使用情况
+        from services.pricing_service import call_agent_pricing_api
 
-    # try:
-    #     # 获取end user信息和关联的email
-    #     user_id = message.from_end_user_id
-    #     end_user = db.session.query(EndUser).filter(EndUser.id == user_id).first()
-    #     account = db.session.query(Account).filter(Account.id == end_user.session_id).first() if end_user else None
-    #     user_email = account.email if account else None
+        call_agent_pricing_api(
+            email=user_email,
+            total_price=str(message.total_price),
+            tools_thoughts=tools_thoughts,
+            mode=model_config.mode
+        )
+    except Exception as e:
+        logger.error(f"Failed to record agent usage: {str(e)}")
 
-    #     response = requests.post(
-    #                     f"{os.getenv('TAKIN_API_URL')}/api/external/dify/pricing/agent",
-    #                     json={
-    #                         "email": user_email,
-    #                         "usage": float(total_price),
-    #                         "agent_thoughts": agent_thoughts,
-    #                         "mode": mode,
-    #                     },
-    #                 )
+    # ------------ takin code: takin cost agent end
 
-    #     response.raise_for_status()
-    # except Exception as e:
-    #     logger.error(f"Failed to call pricing API for agent: {str(e)}")
-    #     return
-   
+
     if provider_configuration.using_provider_type != ProviderType.SYSTEM:
         return
 

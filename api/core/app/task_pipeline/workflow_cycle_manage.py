@@ -69,6 +69,10 @@ from models.workflow import (
     WorkflowRunStatus,
 )
 
+# takin code: import logging and pricing_service
+import logging
+from services.pricing_service import call_workflow_pricing_api
+logger = logging.getLogger(__name__)
 
 class WorkflowCycleManage:
     def __init__(
@@ -493,13 +497,32 @@ class WorkflowCycleManage:
         elif workflow_run.created_by_role == CreatedByRole.END_USER:
             stmt = select(EndUser).where(EndUser.id == workflow_run.created_by)
             end_user = session.scalar(stmt)
+            # takin code: 增加关联的用户信息
+            account = db.session.query(Account).filter(Account.id == end_user.session_id).first() if end_user else None
             if end_user:
                 created_by = {
                     "id": end_user.id,
                     "user": end_user.session_id,
+                    "email": account.email if account else '',
                 }
+            
         else:
             raise NotImplementedError(f"unknown created_by_role: {workflow_run.created_by_role}")
+
+        # ------------ takin code: takin cost workflow start
+        try:
+            # 记录 workflow 使用情况
+            call_workflow_pricing_api(
+                email=created_by.get("email", ""),
+                node_executions=[
+                    execution.execution_metadata_dict 
+                    for execution in self._workflow_node_executions.values()
+                    if execution.execution_metadata_dict
+                ]
+            )
+        except Exception as e:
+            logger.error(f"Failed to record workflow usage: {str(e)}")
+        # ------------ takin code: takin cost workflow end
 
         return WorkflowFinishStreamResponse(
             task_id=task_id,
