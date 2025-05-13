@@ -57,7 +57,6 @@ class RecommendedAppService:
         emails = list(email_to_name.keys())  # 提取所有的 email
         
         try:
-            print(emails)
             response = requests.post(
                 f'{os.getenv("TAKIN_API_URL", "http://127.0.0.1:3000")}/api/external/user',
                 json={"emails": emails}

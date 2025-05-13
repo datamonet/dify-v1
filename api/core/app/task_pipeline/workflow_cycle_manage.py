@@ -71,7 +71,8 @@ from models.workflow import (
 
 # takin code: import logging and pricing_service
 import logging
-from services.pricing_service import call_workflow_pricing_api
+from services.pricing_service import call_workflow_pricing_api, check_workflow_balance
+
 logger = logging.getLogger(__name__)
 
 class WorkflowCycleManage:
@@ -465,6 +466,23 @@ class WorkflowCycleManage:
         workflow_run: WorkflowRun,
     ) -> WorkflowStartStreamResponse:
         _ = session
+        # Takin code: Get user email for balance check
+        created_by = None
+        if workflow_run.created_by_role == CreatedByRole.ACCOUNT:
+            stmt = select(Account).where(Account.id == workflow_run.created_by)
+            account = session.scalar(stmt)
+            if account:
+                created_by =account.email
+        elif workflow_run.created_by_role == CreatedByRole.END_USER:
+            stmt = select(EndUser).where(EndUser.id == workflow_run.created_by)
+            end_user = session.scalar(stmt)
+            # takin code: 增加关联的用户信息
+            account = db.session.query(Account).filter(Account.id == end_user.session_id).first() if end_user else None
+            if end_user:
+                created_by = account.email if account else ''
+        if created_by:
+            check_workflow_balance(email=created_by)
+            
         return WorkflowStartStreamResponse(
             task_id=task_id,
             workflow_run_id=workflow_run.id,
@@ -507,7 +525,7 @@ class WorkflowCycleManage:
                 }
             
         else:
-            raise NotImplementedError(f"unknown created_by_role: {workflow_run.created_by_role}")
+            raise BaseServiceError(f"unknown created_by_role: {workflow_run.created_by_role}")
 
         # ------------ takin code: takin cost workflow start
         try:
@@ -522,6 +540,7 @@ class WorkflowCycleManage:
             )
         except Exception as e:
             logger.error(f"Failed to record workflow usage: {str(e)}")
+            raise BaseServiceError("Failed to record workflow usage")
         # ------------ takin code: takin cost workflow end
 
         return WorkflowFinishStreamResponse(
