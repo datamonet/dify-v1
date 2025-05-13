@@ -33,10 +33,10 @@ export async function getUserInfo() {
 
     return {
       ...userData,
-      credits:
-        userData.subscriptionCredits
+      credits: (userData.level === 'FREE' ? userData.extraCredits
+        : userData.subscriptionCredits
         + userData.extraCredits
-        + userData.subscriptionPurchasedCredits,
+        + userData.subscriptionPurchasedCredits) || userData.extraCredits,
     } as User
   }
   catch (error) {
