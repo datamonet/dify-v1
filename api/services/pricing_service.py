@@ -68,7 +68,7 @@ def call_knowledge_pricing_api(email: str, usage: float, dataset_id: str, batch_
     except Exception as e:
         logger.error(f"Failed to call knowledge pricing API: {str(e)}")
 
-def check_workflow_balance(email: str):
+def check_credit(email: str):
     try:
         # 调用API检查用户积分
         response = requests.get(

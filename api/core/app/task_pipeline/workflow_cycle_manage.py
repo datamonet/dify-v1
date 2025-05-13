@@ -71,7 +71,7 @@ from models.workflow import (
 
 # takin code: import logging and pricing_service
 import logging
-from services.pricing_service import call_workflow_pricing_api, check_workflow_balance
+from services.pricing_service import call_workflow_pricing_api, check_credit
 
 logger = logging.getLogger(__name__)
 
@@ -481,8 +481,8 @@ class WorkflowCycleManage:
             if end_user:
                 created_by = account.email if account else ''
         if created_by:
-            check_workflow_balance(email=created_by)
-            
+            check_credit(email=created_by)
+
         return WorkflowStartStreamResponse(
             task_id=task_id,
             workflow_run_id=workflow_run.id,

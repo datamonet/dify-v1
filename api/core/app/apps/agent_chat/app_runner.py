@@ -50,7 +50,7 @@ class AgentChatAppRunner(AppRunner):
             raise ValueError("App not found")
 
         # takin code: Check user credits before running agent
-        from services.pricing_service import check_workflow_balance
+        from services.pricing_service import check_credit
         
         user_email = None
         if message.from_account_id:
@@ -62,7 +62,7 @@ class AgentChatAppRunner(AppRunner):
             user_email = account.email if account else None
 
         if user_email:
-            check_workflow_balance(email=user_email)
+            check_credit(email=user_email)
 
         inputs = application_generate_entity.inputs
         query = application_generate_entity.query
