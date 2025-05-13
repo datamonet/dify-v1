@@ -71,7 +71,7 @@ def check_workflow_balance(email: str):
     try:
         # 调用API检查用户积分
         response = requests.get(
-            f"{PRICING_API_URL}/api/v1/user/get-credit",
+            f"{PRICING_API_URL}/api/external/get-credit",
             params={"email": email}
         )
         response.raise_for_status()
