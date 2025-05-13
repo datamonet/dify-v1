@@ -71,7 +71,7 @@ def check_workflow_balance(email: str):
     try:
         # 调用API检查用户积分
         response = requests.get(
-            f"{PRICING_API_URL}/api/v1/user/check-balance",
+            f"{PRICING_API_URL}/api/v1/user/get-credit",
             params={"email": email}
         )
         response.raise_for_status()
@@ -79,7 +79,7 @@ def check_workflow_balance(email: str):
         # 检查响应中的用户积分
         credits = data['data'].get("totalAvailableCredits", 0)
         if credits <= 0:
-            raise BaseServiceError("Insufficient credits: Buy more flex credits to proceed")
+            raise BaseServiceError("Insufficient credits: Buy more credits to proceed")
     except Exception as e:
-        logger.error(f"Failed to check workflow credits: {str(e)}")
-        raise BaseServiceError("Failed to check credits")
+        logger.error(f"Insufficient credits: Buy more credits to proceed: {str(e)}")
+        raise BaseServiceError("Insufficient credits: Buy more credits to proceed")
