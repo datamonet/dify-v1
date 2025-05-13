@@ -36,7 +36,7 @@ def call_workflow_pricing_api(email: str, node_executions: List[Dict]) -> None:
         
     try:
         response = requests.post(
-            f"{PRICING_API_URL}/api/v1/workflow/pricing",
+            f"{PRICING_API_URL}/api/external/dify/pricing/workflow",
             json={
                 "email": email,
                 "node_executions": json.dumps(node_executions)
