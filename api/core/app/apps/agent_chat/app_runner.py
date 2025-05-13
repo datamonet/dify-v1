@@ -17,7 +17,7 @@ from core.model_runtime.entities.model_entities import ModelFeature, ModelProper
 from core.model_runtime.model_providers.__base.large_language_model import LargeLanguageModel
 from core.moderation.base import ModerationError
 from extensions.ext_database import db
-from models.model import App, Conversation, Message
+from models.model import App, Conversation, Message, Account, EndUser
 
 logger = logging.getLogger(__name__)
 
@@ -48,6 +48,21 @@ class AgentChatAppRunner(AppRunner):
         app_record = db.session.query(App).filter(App.id == app_config.app_id).first()
         if not app_record:
             raise ValueError("App not found")
+
+        # takin code: Check user credits before running agent
+        from services.pricing_service import check_workflow_balance
+        
+        user_email = None
+        if message.from_account_id:
+            account = db.session.query(Account).filter(Account.id == message.from_account_id).first()
+            user_email = account.email if account else None
+        elif message.from_end_user_id:
+            end_user = db.session.query(EndUser).filter(EndUser.id == message.from_end_user_id).first()
+            account = db.session.query(Account).filter(Account.id == end_user.session_id).first() if end_user else None
+            user_email = account.email if account else None
+
+        if user_email:
+            check_workflow_balance(email=user_email)
 
         inputs = application_generate_entity.inputs
         query = application_generate_entity.query
