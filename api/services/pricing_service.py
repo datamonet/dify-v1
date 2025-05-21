@@ -3,6 +3,7 @@ import logging
 import os
 import json
 import requests
+from decimal import Decimal
 from typing import Optional, List, Dict, Any
 from services.errors.base import BaseServiceError
 
@@ -29,17 +30,32 @@ def call_agent_pricing_api(email: Optional[str], total_price: str, tools_thought
     except Exception as e:
         logger.error(f"Failed to call agent pricing API: {str(e)}")
 
+def _serialize_node_execution(data: Dict) -> Dict:
+    """Helper function to serialize node execution data"""
+    result = {}
+    for k, v in data.items():
+        # Convert enum keys to strings
+        if hasattr(k, 'value'):
+            k = k.value
+        # Convert Decimal to float
+        if isinstance(v, Decimal):
+            v = float(v)
+        result[k] = v
+    return result
+
 def call_workflow_pricing_api(email: str, node_executions: List[Dict]) -> None:
     """Call workflow pricing API"""
     if not email:
         return
         
     try:
+        # Convert node executions to serializable format
+        serialized_executions = [_serialize_node_execution(node) for node in node_executions]
         response = requests.post(
             f"{PRICING_API_URL}/api/external/dify/pricing/workflow",
             json={
                 "email": email,
-                "node_executions": json.dumps(node_executions)
+                "node_executions": json.dumps(serialized_executions)
             }
         )
         response.raise_for_status()

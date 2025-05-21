@@ -34,6 +34,9 @@ import { IS_CLOUD_EDITION } from '@/config'
 import cn from '@/utils/classnames'
 import { useGlobalPublicStore } from '@/context/global-public-context'
 
+import classNames from '@/utils/classnames'
+import { deleteCookie } from '@/app/api/user'
+
 export default function AppSelector() {
   const itemClassName = `
     flex items-center w-full h-9 pl-3 pr-2 text-text-secondary system-md-regular

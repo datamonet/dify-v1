@@ -69,6 +69,7 @@ from models import (
     WorkflowRunStatus,
     WorkflowRunTriggeredFrom,
 )
+from services.errors.base import BaseServiceError
 
 # takin code: import logging and pricing_service
 import logging
@@ -471,12 +472,12 @@ class WorkflowCycleManager:
         _ = session
         # Takin code: Get user email for balance check
         created_by = None
-        if workflow_run.created_by_role == CreatedByRole.ACCOUNT:
+        if workflow_run.created_by_role == CreatorUserRole.ACCOUNT:
             stmt = select(Account).where(Account.id == workflow_run.created_by)
             account = session.scalar(stmt)
             if account:
-                created_by =account.email
-        elif workflow_run.created_by_role == CreatedByRole.END_USER:
+                created_by = account.email
+        elif workflow_run.created_by_role == CreatorUserRole.END_USER:
             stmt = select(EndUser).where(EndUser.id == workflow_run.created_by)
             end_user = session.scalar(stmt)
             # takin code: 增加关联的用户信息
@@ -534,12 +535,8 @@ class WorkflowCycleManager:
         try:
             # 记录 workflow 使用情况
             call_workflow_pricing_api(
-                email=created_by.get("email", ""),
-                node_executions=[
-                    execution.execution_metadata_dict 
-                    for execution in self._workflow_node_executions.values()
-                    if execution.execution_metadata_dict
-                ]
+                email = created_by.get("email", ""),
+                node_executions = [execution.metadata for execution in self._workflow_node_execution_repository._node_execution_cache.values() if execution.metadata]
             )
         except Exception as e:
             logger.error(f"Failed to record workflow usage: {str(e)}")
