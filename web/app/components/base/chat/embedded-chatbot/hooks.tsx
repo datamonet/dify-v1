@@ -36,6 +36,9 @@ import { InputVarType } from '@/app/components/workflow/types'
 import { TransferMethod } from '@/types/app'
 import { addFileInfos, sortAgentSorts } from '@/app/components/tools/utils'
 import { noop } from 'lodash-es'
+import { useGetAppAccessMode, useGetUserCanAccessApp } from '@/service/access-control'
+import { useGlobalPublicStore } from '@/context/global-public-context'
+import { AccessMode } from '@/models/access-control'
 
 function getFormattedChatList(messages: any[]) {
   const newChatList: ChatItem[] = []
@@ -65,7 +68,18 @@ function getFormattedChatList(messages: any[]) {
 
 export const useEmbeddedChatbot = () => {
   const isInstalledApp = false
+  const systemFeatures = useGlobalPublicStore(s => s.systemFeatures)
   const { data: appInfo, isLoading: appInfoLoading, error: appInfoError } = useSWR('appInfo', fetchAppInfo)
+  const { isPending: isGettingAccessMode, data: appAccessMode } = useGetAppAccessMode({
+    appId: appInfo?.app_id,
+    isInstalledApp,
+    enabled: systemFeatures.webapp_auth.enabled,
+  })
+  const { isPending: isCheckingPermission, data: userCanAccessResult } = useGetUserCanAccessApp({
+    appId: appInfo?.app_id,
+    isInstalledApp,
+    enabled: systemFeatures.webapp_auth.enabled,
+  })
 
   const appData = useMemo(() => {
     return appInfo
@@ -73,9 +87,11 @@ export const useEmbeddedChatbot = () => {
   const appId = useMemo(() => appData?.app_id, [appData])
 
   const [userId, setUserId] = useState<string>()
+  const [conversationId, setConversationId] = useState<string>()
   useEffect(() => {
-    getProcessedSystemVariablesFromUrlParams().then(({ user_id }) => {
+    getProcessedSystemVariablesFromUrlParams().then(({ user_id, conversation_id }) => {
       setUserId(user_id)
+      setConversationId(conversation_id)
     })
   }, [])
 
@@ -109,7 +125,9 @@ export const useEmbeddedChatbot = () => {
   const [conversationIdInfo, setConversationIdInfo] = useLocalStorageState<Record<string, Record<string, string>>>(CONVERSATION_ID_INFO, {
     defaultValue: {},
   })
-  const currentConversationId = useMemo(() => conversationIdInfo?.[appId || '']?.[userId || 'DEFAULT'] || '', [appId, conversationIdInfo, userId])
+  const allowResetChat = !conversationId
+  const currentConversationId = useMemo(() => conversationIdInfo?.[appId || '']?.[userId || 'DEFAULT'] || conversationId || '',
+    [appId, conversationIdInfo, userId, conversationId])
   const handleConversationIdInfoChange = useCallback((changeConversationId: string) => {
     if (appId) {
       let prevValue = conversationIdInfo?.[appId || '']
@@ -360,8 +378,11 @@ export const useEmbeddedChatbot = () => {
 
   return {
     appInfoError,
-    appInfoLoading,
+    appInfoLoading: appInfoLoading || (systemFeatures.webapp_auth.enabled && (isGettingAccessMode || isCheckingPermission)),
+    accessMode: systemFeatures.webapp_auth.enabled ? appAccessMode?.accessMode : AccessMode.PUBLIC,
+    userCanAccess: systemFeatures.webapp_auth.enabled ? userCanAccessResult?.result : true,
     isInstalledApp,
+    allowResetChat,
     appId,
     currentConversationId,
     currentConversationItem,

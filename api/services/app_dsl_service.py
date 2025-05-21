@@ -40,7 +40,7 @@ IMPORT_INFO_REDIS_KEY_PREFIX = "app_import_info:"
 CHECK_DEPENDENCIES_REDIS_KEY_PREFIX = "app_check_dependencies:"
 IMPORT_INFO_REDIS_EXPIRY = 10 * 60  # 10 minutes
 DSL_MAX_SIZE = 10 * 1024 * 1024  # 10MB
-CURRENT_DSL_VERSION = "0.1.5"
+CURRENT_DSL_VERSION = "0.3.0"
 
 
 class ImportMode(StrEnum):
@@ -77,13 +77,19 @@ def _check_version_compatibility(imported_version: str) -> ImportStatus:
     except version.InvalidVersion:
         return ImportStatus.FAILED
 
-    # Compare major version and minor version
-    if current_ver.major != imported_ver.major or current_ver.minor != imported_ver.minor:
+    # If imported version is newer than current, always return PENDING
+    if imported_ver > current_ver:
         return ImportStatus.PENDING
 
-    if current_ver.micro != imported_ver.micro:
+    # If imported version is older than current's major, return PENDING
+    if imported_ver.major < current_ver.major:
+        return ImportStatus.PENDING
+
+    # If imported version is older than current's minor, return COMPLETED_WITH_WARNINGS
+    if imported_ver.minor < current_ver.minor:
         return ImportStatus.COMPLETED_WITH_WARNINGS
 
+    # If imported version equals or is older than current's micro, return COMPLETED
     return ImportStatus.COMPLETED
 
 
@@ -94,6 +100,7 @@ class PendingData(BaseModel):
     description: str | None
     icon_type: str | None
     icon: str | None
+    icon_url: str | None
     icon_background: str | None
     app_id: str | None
 
@@ -118,6 +125,7 @@ class AppDslService:
         description: Optional[str] = None,
         icon_type: Optional[str] = None,
         icon: Optional[str] = None,
+        icon_url: Optional[str] = None,
         icon_background: Optional[str] = None,
         app_id: Optional[str] = None,
     ) -> Import:
@@ -242,6 +250,7 @@ class AppDslService:
                     icon_type=icon_type,
                     icon=icon,
                     icon_background=icon_background,
+                    icon_url=icon_url,
                     app_id=app_id,
                 )
                 redis_client.setex(
@@ -282,6 +291,7 @@ class AppDslService:
                 description=description,
                 icon_type=icon_type,
                 icon=icon,
+                icon_url=icon_url,
                 icon_background=icon_background,
                 dependencies=check_dependencies_pending_data,
             )
@@ -403,6 +413,7 @@ class AppDslService:
         description: Optional[str] = None,
         icon_type: Optional[str] = None,
         icon: Optional[str] = None,
+        icon_url: Optional[str] = None,
         icon_background: Optional[str] = None,
         dependencies: Optional[list[PluginDependency]] = None,
     ) -> App:
@@ -415,12 +426,12 @@ class AppDslService:
 
         # Set icon type
         icon_type_value = icon_type or app_data.get("icon_type")
-        if icon_type_value in ["emoji", "link"]:
+        if icon_type_value in ["emoji", "link", "image"]:
             icon_type = icon_type_value
         else:
             icon_type = "emoji"
         icon = icon or str(app_data.get("icon", ""))
-
+        icon_url = icon_url or str(app_data.get("icon_url", ""))
         if app:
             # Update existing app
             app.name = name or app_data.get("name", app.name)
@@ -428,6 +439,7 @@ class AppDslService:
             app.icon_type = icon_type
             app.icon = icon
             app.icon_background = icon_background or app_data.get("icon_background", app.icon_background)
+            app.icon_url = icon_url or app_data.get("icon_url", app.icon_url)
             app.updated_by = account.id
         else:
             if account.current_tenant_id is None:

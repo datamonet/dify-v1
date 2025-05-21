@@ -12,7 +12,8 @@ import PluginsNav from './plugins-nav'
 import ExploreNav from './explore-nav'
 import ToolsNav from './tools-nav'
 import { useAppContext } from '@/context/app-context'
-import LogoSite from '@/app/components/base/logo/logo-takin'
+import DifyLogo from '@/app/components/base/logo/dify-logo'
+import WorkplaceSelector from '@/app/components/header/account-dropdown/workplace-selector'
 import useBreakpoints, { MediaType } from '@/hooks/use-breakpoints'
 import { useProviderContext } from '@/context/provider-context'
 import { useModalContext } from '@/context/modal-context'
@@ -47,7 +48,7 @@ const Header = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSegment])
   return (
-    <div className='flex flex-1 items-center justify-between bg-background-body px-4'>
+    <div className='relative flex flex-1 items-center justify-between bg-background-body'>
       <div className='flex items-center'>
         {isMobile && <div
           className='flex h-8 w-8 cursor-pointer items-center justify-center'
@@ -74,8 +75,8 @@ const Header = () => {
       </div >
       {isMobile && (
         <div className='flex'>
-          <Link href={process.env.NEXT_PUBLIC_TAKIN_API_URL!} className='mr-4 flex items-center'>
-            <LogoSite />
+          <Link href="/apps" className='mr-4 flex items-center'>
+            <DifyLogo />
           </Link>
           <div className='font-light text-divider-deep'>/</div>
           {enableBilling ? <PlanBadge allowHover sandboxAsUpgrade plan={plan.type} onClick={handlePlanClick} /> : <LicenseNav />}
@@ -83,7 +84,7 @@ const Header = () => {
       )}
       {
         !isMobile && (
-          <div className='flex items-center'>
+          <div className='absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center'>
             {!isCurrentWorkspaceDatasetOperator && <ExploreNav className={navClassName} />}
             {!isCurrentWorkspaceDatasetOperator && <AppNav />}
             {(isCurrentWorkspaceEditor || isCurrentWorkspaceDatasetOperator) && <DatasetNav />}
@@ -91,7 +92,7 @@ const Header = () => {
           </div>
         )
       }
-      <div className='flex shrink-0 items-center'>
+      <div className='flex shrink-0 items-center pr-3'>
         <EnvNav />
         {/* takin commadnd: hidden workspace */}
         {isCurrentWorkspaceOwner && (

@@ -31,8 +31,8 @@ const Category: FC<ICategoryProps> = ({
 
 
   const itemClassName = (isSelected: boolean) => cn(
-    'flex h-[32px] cursor-pointer items-center rounded-lg border-[0.5px] border-transparent px-3 py-[7px] font-medium leading-[18px] text-gray-700 hover:bg-gray-200',
-    isSelected && 'border-gray-200 bg-white text-primary-600 shadow-xs hover:bg-white',
+    'flex h-[32px] cursor-pointer items-center rounded-lg border-[0.5px] border-transparent px-3 py-[7px] font-medium leading-[18px] text-text-tertiary hover:bg-components-main-nav-nav-button-bg-active',
+    isSelected && 'border-components-main-nav-nav-button-border bg-components-main-nav-nav-button-bg-active text-components-main-nav-nav-button-text-active shadow-xs',
   )
 
   return (

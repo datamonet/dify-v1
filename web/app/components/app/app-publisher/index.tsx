@@ -1,6 +1,7 @@
 import {
   memo,
   useCallback,
+  useEffect,
   useState,
   useMemo
 } from 'react'
@@ -8,15 +9,21 @@ import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import {
   RiArrowDownSLine,
+  RiArrowRightSLine,
+  RiLockLine,
   RiPlanetLine,
   RiPlayCircleLine,
   RiPlayList2Line,
   RiTerminalBoxLine,
 } from '@remixicon/react'
 import { useKeyPress } from 'ahooks'
+import { getKeyboardKeyCodeBySystem } from '../../workflow/utils'
 import Toast from '../../base/toast'
 import type { ModelAndParameter } from '../configuration/debug/types'
-import { getKeyboardKeyCodeBySystem } from '../../workflow/utils'
+import Divider from '../../base/divider'
+import AccessControl from '../app-access-control'
+import Loading from '../../base/loading'
+import Tooltip from '../../base/tooltip'
 import SuggestedAction from './suggested-action'
 import PublishWithMultipleModel from './publish-with-multiple-model'
 import Button from '@/app/components/base/button'
@@ -39,6 +46,9 @@ import type { PublishWorkflowParams } from '@/types/workflow'
 import PermissionsRadio from './permissions-radio'
 import useSWR from 'swr'
 import { createRecommendedApp, deleteRecommendedApp, fetchAppDetail, fetchAppList } from '@/service/explore'
+import { useAppWhiteListSubjects, useGetUserCanAccessApp } from '@/service/access-control'
+import { AccessMode } from '@/models/access-control'
+import { useGlobalPublicStore } from '@/context/global-public-context'
 
 export type AppPublisherProps = {
   disabled?: boolean
@@ -81,11 +91,33 @@ const AppPublisher = ({
   const [published, setPublished] = useState(false)
   const [open, setOpen] = useState(false)
   const appDetail = useAppStore(state => state.appDetail)
+  const setAppDetail = useAppStore(s => s.setAppDetail)
+  const systemFeatures = useGlobalPublicStore(s => s.systemFeatures)
   const { app_base_url: appBaseURL = '', access_token: accessToken = '' } = appDetail?.site ?? {}
   const appMode = (appDetail?.mode !== 'completion' && appDetail?.mode !== 'workflow') ? 'chat' : appDetail.mode
-  const appURL = `${appBaseURL}/${basePath}/${appMode}/${accessToken}`
+  const appURL = `${appBaseURL}${basePath}/${appMode}/${accessToken}`
   const isChatApp = ['chat', 'agent-chat', 'completion'].includes(appDetail?.mode || '')
+  const { data: userCanAccessApp, isLoading: isGettingUserCanAccessApp, refetch } = useGetUserCanAccessApp({ appId: appDetail?.id, enabled: false })
+  const { data: appAccessSubjects, isLoading: isGettingAppWhiteListSubjects } = useAppWhiteListSubjects(appDetail?.id, open && systemFeatures.webapp_auth.enabled && appDetail?.access_mode === AccessMode.SPECIFIC_GROUPS_MEMBERS)
 
+  useEffect(() => {
+    if (systemFeatures.webapp_auth.enabled && open && appDetail)
+      refetch()
+  }, [open, appDetail, refetch, systemFeatures])
+
+  const [showAppAccessControl, setShowAppAccessControl] = useState(false)
+  const [isAppAccessSet, setIsAppAccessSet] = useState(true)
+  useEffect(() => {
+    if (appDetail && appAccessSubjects) {
+      if (appDetail.access_mode === AccessMode.SPECIFIC_GROUPS_MEMBERS && appAccessSubjects.groups?.length === 0 && appAccessSubjects.members?.length === 0)
+        setIsAppAccessSet(false)
+      else
+        setIsAppAccessSet(true)
+    }
+    else {
+      setIsAppAccessSet(true)
+    }
+  }, [appAccessSubjects, appDetail])
   const language = useGetLanguage()
   const formatTimeFromNow = useCallback((time: number) => {
     return dayjs(time).locale(language === 'zh_Hans' ? 'zh-cn' : language.replace('_', '-')).fromNow()
@@ -126,7 +158,7 @@ const AppPublisher = ({
       await onRestore?.()
       setOpen(false)
     }
-    catch {}
+    catch { }
   }, [onRestore])
 
   const handleTrigger = useCallback(() => {
@@ -157,6 +189,13 @@ const AppPublisher = ({
     }
   }, [appDetail?.id])
 
+  const handleAccessControlUpdate = useCallback(() => {
+    fetchAppDetail({ url: '/apps', id: appDetail!.id }).then((res) => {
+      setAppDetail(res)
+      setShowAppAccessControl(false)
+    })
+  }, [appDetail, setAppDetail])
+
   const [embeddingModalOpen, setEmbeddingModalOpen] = useState(false)
 
   useKeyPress(`${getKeyboardKeyCodeBySystem('ctrl')}.shift.p`, (e) => {
@@ -165,7 +204,7 @@ const AppPublisher = ({
       return
     handlePublish()
   },
-  { exactMatch: true, useCapture: true })
+    { exactMatch: true, useCapture: true })
 
 
   const { mutate } = useSWR(
@@ -312,9 +351,9 @@ const AppPublisher = ({
           appBaseUrl={appBaseURL}
           accessToken={accessToken}
         />
+        {showAppAccessControl && <AccessControl app={appDetail!} onConfirm={handleAccessControlUpdate} onClose={() => { setShowAppAccessControl(false) }} />}
       </PortalToFollowElem >
-    </>
-  )
+    </>)
 }
 
 export default memo(AppPublisher)
