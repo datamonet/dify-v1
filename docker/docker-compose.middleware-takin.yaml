@@ -46,7 +46,7 @@ services:
   plugin_daemon:
     env_file:
       - middleware-takin.env
-    image: langgenius/dify-plugin-daemon:0.0.7-local
+    image: langgenius/dify-plugin-daemon:0.0.10-local
     restart: always
     environment:
       # Use the shared environment variables.
