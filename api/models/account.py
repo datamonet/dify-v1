@@ -189,7 +189,8 @@ class TenantAccountRole(enum.StrEnum):
         }
 
 
-class Tenant(Base):
+# taking code:add db.Model
+class Tenant(Base, db.Model):
     __tablename__ = "tenants"
     __table_args__ = (db.PrimaryKeyConstraint("id", name="tenant_pkey"),)
 

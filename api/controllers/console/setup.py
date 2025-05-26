@@ -6,6 +6,7 @@ from constants.languages import languages
 from libs.helper import StrLen, email, extract_remote_ip
 from libs.password import valid_password
 from models.model import Account, DifySetup, db
+# takin code:add db.Model
 from models.account import Tenant
 from services.account_service import RegisterService, TenantService
 
