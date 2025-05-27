@@ -1,3 +1,5 @@
+# takin code: import logging and pricing_service
+import logging
 import time
 from collections.abc import Mapping, Sequence
 from datetime import UTC, datetime
@@ -55,9 +57,6 @@ from models import (
     WorkflowNodeExecutionStatus,
     WorkflowRun,
 )
-
-# takin code: import logging and pricing_service
-import logging
 from services.errors.base import BaseServiceError
 from services.pricing_service import call_workflow_pricing_api, check_credit
 

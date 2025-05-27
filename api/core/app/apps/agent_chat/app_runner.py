@@ -17,7 +17,7 @@ from core.model_runtime.entities.model_entities import ModelFeature, ModelProper
 from core.model_runtime.model_providers.__base.large_language_model import LargeLanguageModel
 from core.moderation.base import ModerationError
 from extensions.ext_database import db
-from models.model import App, Conversation, Message, Account, EndUser
+from models.model import Account, App, Conversation, EndUser, Message
 
 logger = logging.getLogger(__name__)
 

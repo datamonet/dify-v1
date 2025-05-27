@@ -3,15 +3,12 @@ import json
 import flask_login  # type: ignore
 from flask import Response, request
 from flask_login import user_loaded_from_request, user_logged_in
-from werkzeug.exceptions import NotFound, Unauthorized
+from werkzeug.exceptions import Unauthorized
 
 import contexts
-from configs import dify_config
 from dify_app import DifyApp
-from extensions.ext_database import db
 from libs.passport import PassportService
-from models.account import Account, Tenant, TenantAccountJoin
-from models.model import EndUser
+from models.account import Account
 from services.account_service import AccountService
 
 login_manager = flask_login.LoginManager()

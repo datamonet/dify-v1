@@ -7,8 +7,8 @@ from core.entities.provider_entities import QuotaUnit
 from core.plugin.entities.plugin import ModelProviderID
 from events.message_event import message_was_created
 from extensions.ext_database import db
+from models import Account, EndUser
 from models.provider import Provider, ProviderType
-from models import EndUser, Account
 
 logger = logging.getLogger(__name__)
 

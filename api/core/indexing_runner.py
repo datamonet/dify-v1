@@ -8,7 +8,6 @@ import time
 import uuid
 from typing import Any, Optional, cast
 
-import requests
 from flask import current_app
 from flask_login import current_user
 from sqlalchemy.orm.exc import ObjectDeletedError

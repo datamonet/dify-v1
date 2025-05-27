@@ -1,17 +1,18 @@
 # takin code: services/pricing_service.py,后端扣费api
+import json
 import logging
 import os
-import json
+from typing import Any, Optional
+
 import requests
-from decimal import Decimal
-from typing import Optional, List, Dict, Any
+
 from services.errors.base import BaseServiceError
 
 logger = logging.getLogger(__name__)
 
 PRICING_API_URL = os.getenv("TAKIN_API_URL", "http://127.0.0.1:3000")
 
-def call_agent_pricing_api(email: Optional[str], total_price: str, tools_thoughts: List[str], mode: Any) -> None:
+def call_agent_pricing_api(email: Optional[str], total_price: str, tools_thoughts: list[str], mode: Any) -> None:
     """Call agent pricing API"""
     if not email:
         return
@@ -32,7 +33,7 @@ def call_agent_pricing_api(email: Optional[str], total_price: str, tools_thought
 
 
 
-def call_workflow_pricing_api(email: str, node_executions: List[str]) -> None:
+def call_workflow_pricing_api(email: str, node_executions: list[str]) -> None:
     """Call workflow pricing API"""
     if not email:
         return

@@ -35,6 +35,7 @@ from models import (
     WorkflowRunStatus,
 )
 
+
 class WorkflowCycleManager:
     def __init__(
         self,
