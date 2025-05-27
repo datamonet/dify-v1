@@ -66,7 +66,7 @@ class InsertApi(Resource):
             return {"error": "Account already exists"}, 400
 
         # Check if there is at least one tenant
-        first_tenant = Tenant.query.first()
+        first_tenant = db.session.query(Tenant).first()
         if not first_tenant:
             return {"error": "No workspace available. Please contact administrator."}, 400
 
