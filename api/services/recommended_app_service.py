@@ -78,10 +78,13 @@ class RecommendedAppService:
             # 根据 email 获取对应的用户名
             app.app.username = email_to_name.get(email)
 
-
+        if recommended_apps.pages > 0:
+            has_more = recommended_apps.page != recommended_apps.pages
+        else:
+            has_more = False
         # 返回带有分页和合并后的数据
         response_data = {
-            "has_more": recommended_apps.page != recommended_apps.pages,
+            "has_next": has_more,
             "items": recommended_apps.items,
             "total": recommended_apps.total,
             "page": recommended_apps.page,

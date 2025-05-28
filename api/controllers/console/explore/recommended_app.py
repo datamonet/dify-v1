@@ -87,7 +87,8 @@ class RecommendedAppListApi(Resource):
         else:
             language_prefix = languages[0]
 
-        return RecommendedAppService.get_paginate_recommended_apps(language_prefix, args)
+        res = RecommendedAppService.get_paginate_recommended_apps(language_prefix, args)
+        return res
         # return RecommendedAppService.get_recommended_apps_and_categories(language_prefix)
     
     @login_required

@@ -138,16 +138,7 @@ function CreateApp({ onClose, onSuccess, onCreateFromTemplate }: CreateAppProps)
                   onClick={() => {
                     setAppMode('agent-chat')
                   }} />
-                {/* <AppTypeCard
-                  active={appMode === 'completion'}
-                  title={t('app.newApp.completeApp')}
-                  description={t('app.newApp.completionShortDescription')}
-                  icon={<div className='flex h-6 w-6 items-center justify-center rounded-md bg-components-icon-bg-teal-solid'>
-                    <ListSparkle className='h-4 w-4 text-components-avatar-shape-fill-stop-100' />
-                  </div>}
-                  onClick={() => {
-                    setAppMode('completion')
-                  }} /> */}
+              
               </div>
             </div>
             <div>
@@ -175,16 +166,7 @@ function CreateApp({ onClose, onSuccess, onCreateFromTemplate }: CreateAppProps)
                   onClick={() => {
                     setAppMode('workflow')
                   }} />
-                  <AppTypeCard
-                  active={appMode === 'advanced-chat'}
-                  title={t('app.types.advanced')}
-                  description={t('app.newApp.advancedShortDescription')}
-                  icon={<div className='flex h-6 w-6 items-center justify-center rounded-md bg-components-icon-bg-blue-light-solid'>
-                    <BubbleTextMod className='h-4 w-4 text-components-avatar-shape-fill-stop-100' />
-                  </div>}
-                  onClick={() => {
-                    setAppMode('advanced-chat')
-                  }} />
+                 
               </div>
             </div>
             <div>
