@@ -1,7 +1,7 @@
 'use client'
 
 import { lowerCase } from 'lodash-es'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { useContext } from 'use-context-selector'
@@ -209,12 +209,13 @@ const Apps = ({
     })
   }
 
-  useEffect(() => {
-    if (searchParamsCategory) {
+  useMemo(() => {
+    console.log('searchParamsCategory', searchParamsCategory)
+    if (searchParamsCategory && searchParamsCategory !== currCategory) {
       setCurrCategory(searchParamsCategory)
       exploreAppMutate()
     }
-  }, [searchParamsCategory])
+  }, [searchParamsCategory, currCategory])
 
   useEffect(() => {
     if (searchParamsAppId)
