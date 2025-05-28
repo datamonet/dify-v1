@@ -41,7 +41,7 @@ recommended_app_list_fields = {
     "page": fields.Integer,
     "limit": fields.Integer(attribute="per_page"),
     "total": fields.Integer,
-    "has_more": fields.Boolean(attribute="has_next"),
+    "has_more": fields.Boolean(attribute="has_more"),
     "data": fields.List(fields.Nested(recommended_app_fields), attribute="items"),
 }
 
