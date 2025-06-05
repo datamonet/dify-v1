@@ -125,6 +125,7 @@ class WorkflowCycleManager:
                 )
             )
 
+        self._workflow_execution_repository.save(workflow_execution)
         return workflow_execution
 
     def handle_workflow_run_partial_success(
