@@ -511,6 +511,8 @@ class AdvancedChatAppGenerateTaskPipeline:
                         session=session,
                         task_id=self._application_generate_entity.task_id,
                         workflow_execution=workflow_execution,
+                        # takin code: node_executions
+                        pricing_node_executions=self._workflow_cycle_manager._workflow_node_execution_repository._node_execution_cache
                     )
 
                 yield workflow_finish_resp
@@ -537,6 +539,8 @@ class AdvancedChatAppGenerateTaskPipeline:
                         session=session,
                         task_id=self._application_generate_entity.task_id,
                         workflow_execution=workflow_execution,
+                        # takin code: node_executions
+                        pricing_node_executions=self._workflow_cycle_manager._workflow_node_execution_repository._node_execution_cache
                     )
 
                 yield workflow_finish_resp
@@ -564,6 +568,8 @@ class AdvancedChatAppGenerateTaskPipeline:
                         session=session,
                         task_id=self._application_generate_entity.task_id,
                         workflow_execution=workflow_execution,
+                        # takin code: node_executions
+                        pricing_node_executions=self._workflow_cycle_manager._workflow_node_execution_repository._node_execution_cache
                     )
                     err_event = QueueErrorEvent(error=ValueError(f"Run failed: {workflow_execution.error_message}"))
                     err = self._base_task_pipeline._handle_error(
@@ -589,6 +595,8 @@ class AdvancedChatAppGenerateTaskPipeline:
                             session=session,
                             task_id=self._application_generate_entity.task_id,
                             workflow_execution=workflow_execution,
+                            # takin code: node_executions
+                            pricing_node_executions=self._workflow_cycle_manager._workflow_node_execution_repository._node_execution_cache
                         )
                         # Save message
                         self._save_message(session=session, graph_runtime_state=graph_runtime_state)

@@ -501,6 +501,8 @@ class WorkflowAppGenerateTaskPipeline:
                         session=session,
                         task_id=self._application_generate_entity.task_id,
                         workflow_execution=workflow_execution,
+                        # takin code: node_executions
+                        pricing_node_executions=self._workflow_cycle_manager._workflow_node_execution_repository._node_execution_cache
                     )
                     session.commit()
 
@@ -534,6 +536,8 @@ class WorkflowAppGenerateTaskPipeline:
                         session=session,
                         task_id=self._application_generate_entity.task_id,
                         workflow_execution=workflow_execution,
+                        # takin code: node_executions
+                        pricing_node_executions=self._workflow_cycle_manager._workflow_node_execution_repository._node_execution_cache
                     )
                     session.commit()
 
