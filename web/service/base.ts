@@ -518,6 +518,16 @@ export const request = async<T>(url: string, options = {}, otherOptions?: IOther
         return Promise.reject(err)
       }
 
+      // handle insufficient credits error
+      if (message?.includes('Insufficient credits')) {
+        Toast.notify({
+          type: 'error',
+          message: '积分不足：请购买更多积分以继续使用',
+          duration: 4000
+        })
+        return Promise.reject(err)
+      }
+
       // refresh token
       const [refreshErr] = await asyncRunSafe(refreshAccessTokenOrRelogin(TIME_OUT))
       if (refreshErr === null)

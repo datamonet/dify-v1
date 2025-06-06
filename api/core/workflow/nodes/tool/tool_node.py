@@ -367,6 +367,7 @@ class ToolNode(BaseNode[ToolNodeData]):
                 outputs={"text": text, "files": files, "json": json, **variables},
                 metadata={
                     **agent_execution_metadata,
+                    NodeRunMetadataKey.TOOL_USAGE: message.meta,  # takin ai: 增加工具的useage
                     NodeRunMetadataKey.TOOL_INFO: tool_info,
                     NodeRunMetadataKey.AGENT_LOG: agent_logs,
                 },

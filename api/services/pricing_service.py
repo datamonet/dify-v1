@@ -43,7 +43,7 @@ def call_workflow_pricing_api(email: str, node_executions: list[str]) -> None:
             f"{PRICING_API_URL}/api/external/dify/pricing/workflow",
             json={
                 "email": email,
-                "node_executions": json.dumps([json.loads(i) for i in node_executions])
+                "node_executions": node_executions
             }
         )
         response.raise_for_status()

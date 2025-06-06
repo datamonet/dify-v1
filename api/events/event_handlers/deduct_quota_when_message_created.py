@@ -27,7 +27,7 @@ def handle(sender, **kwargs):
     # ------------ takin code: takin cost agent start
     try:
         # 所有工具调用信息以及对话信息
-        tools_thoughts = [i.tool for i in message.agent_thoughts if i.tool and i.tool.strip()]
+        tools_thoughts = [{"tool_name": i.tool, "token_usage": {"input_tokens": i.message_token, "output_tokens": i.answer_token}} for i in message.agent_thoughts if i.tool and i.tool.strip()]
         
         # 获取用户邮箱
         user_email = None

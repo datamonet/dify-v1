@@ -32,6 +32,10 @@ class NodeRunMetadataKey(StrEnum):
     ERROR_STRATEGY = "error_strategy"  # node in continue on error mode return the field
     LOOP_VARIABLE_MAP = "loop_variable_map"  # single loop variable output
 
+    # takin ai: 增加工具的useage
+    TOOL_USAGE = "tool_usage"  # tool usage
+
+
 
 class NodeRunResult(BaseModel):
     """

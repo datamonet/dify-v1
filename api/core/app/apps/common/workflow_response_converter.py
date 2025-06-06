@@ -148,7 +148,7 @@ class WorkflowResponseConverter:
             # 记录 workflow 使用情况
             call_workflow_pricing_api(
                 email = created_by.get("email", ""),
-                node_executions = [execution.execution_metadata for execution in pricing_node_executions.values() if execution.execution_metadata]
+                node_executions = [execution.execution_metadata_dict for execution in pricing_node_executions.values() if execution.execution_metadata_dict]
             )
         except Exception as e:
             logger.error(f"Failed to record workflow usage: {str(e)}")
