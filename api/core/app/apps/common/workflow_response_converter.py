@@ -60,6 +60,7 @@ from models import (
 from services.errors.base import BaseServiceError
 from services.pricing_service import call_workflow_pricing_api, check_credit
 
+from extensions.ext_database import db
 logger = logging.getLogger(__name__)
 
 
